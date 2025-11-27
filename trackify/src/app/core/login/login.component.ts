@@ -15,4 +15,9 @@ export class LoginComponent {
   showLogin() {
     this.isActive = false;
   }
+
+
+  toggleActive() {
+    this.isActive = !this.isActive;
+  }
 }
