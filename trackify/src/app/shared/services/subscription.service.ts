@@ -18,11 +18,11 @@ export class SubscriptionService {
   getSubscriptionById(id: number): Observable<Subscription> {
     return this.http.get<Subscription>(`${this.apiUrl}/${id}`);
   }
-  createSubscription(subscription: Subscription): Observable<Subscription> {
-    return this.http.post<Subscription>(this.apiUrl, subscription);
+  createSubscription(subscription: any): Observable<number> {
+    return this.http.post<number>(this.apiUrl, subscription);
   }
-  updateSubscription(id: number, subscription: Subscription): Observable<Subscription> {
-    return this.http.put<Subscription>(`${this.apiUrl}/${id}`, subscription);
+  updateSubscription(id: number, subscription: any): Observable<number> {
+    return this.http.put<number>(`${this.apiUrl}/${id}`, subscription);
   }
   deleteSubscription(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
