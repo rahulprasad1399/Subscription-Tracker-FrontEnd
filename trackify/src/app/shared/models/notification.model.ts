@@ -13,3 +13,7 @@ export interface NotificationInter {
   serviceName: string;
   categoryName: string;
 }
+
+export interface NotificationCount {
+  count : number
+}

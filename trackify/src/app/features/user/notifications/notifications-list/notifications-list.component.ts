@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, input, signal } from '@angular/core';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ServiceImagePipe } from '../../../../shared/pipes/service-image.pipe';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -14,15 +14,28 @@ export class NotificationsListComponent implements OnInit {
   notificationService = inject(NotificationService);
   notifications = signal<Array<NotificationInter>>([]);
 
-  selectedNotification = signal<NotificationInter | null>(null)
+  notificationCount = signal<number>(0);
+
+  markUsReadNotificationArr = signal<number[]>([]);
+
+  selectedNotification = signal<NotificationInter | null>(null);
 
   openModal = signal<boolean>(false);
 
   ngOnInit(): void {
+    this.getAllNotification();
+  }
+
+  getAllNotification() {
     this.notificationService.getAllNotifications().subscribe({
-      next: (notification) => {
-        console.log(notification);
-        this.notifications.set(notification);
+      next: (notificationList) => {
+        this.notifications.set(notificationList);
+
+        const unread = notificationList.filter((n) => !n.isRead);
+
+        this.notificationCount.set(unread.length);
+
+        this.markUsReadNotificationArr.set(unread.map((n) => n.id));
       },
       error: (err) => console.log(err),
     });
@@ -36,9 +49,32 @@ export class NotificationsListComponent implements OnInit {
     this.openModal.set(false);
   }
 
-  onSelectNotification(notification : NotificationInter){
-    this.openModal.set(true)
-    this.selectedNotification.set(notification)
+  onSelectNotification(notification: NotificationInter) {
+    this.openModal.set(true);
+    this.selectedNotification.set(notification);
+    this.onUpdateNotification(notification.id);
   }
 
+  onUpdateNotification(id: number) {
+    this.notificationService.updateNotificationById(id).subscribe({
+      next: (res) => {
+        this.getAllNotification();
+        this.notificationService.refreshUnreadCount();
+      },
+      error: (err) => console.log(err),
+    });
+  }
+
+  onMarkAllAsRead() {
+    console.log(this.markUsReadNotificationArr());
+    this.notificationService
+      .updateNotification(this.markUsReadNotificationArr())
+      .subscribe({
+        next: (res) => {
+          this.getAllNotification();
+          this.notificationService.refreshUnreadCount();
+        },
+        error: (err) => console.log(err),
+      });
+  }
 }
