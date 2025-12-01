@@ -36,8 +36,9 @@ export interface AllSubscription {
   status: ActiveStatus;
 }
 export interface GetAllSubscriptionsResponse{
-    totalItems: number;
-    activeItems: number;
-    monthlyCost: number;
+    totalItem: number;
+    activeItem: number;
+    moneySpentMonthly: number;
+    upcomingRenewal:number;
     subscriptions: AllSubscription[];
 }
