@@ -1,1 +1,194 @@
-<p>notifications-list works!</p>
+<div class="w-full max-w-5xl mx-auto px-4 py-8 relative">
+  <div>
+    <header>
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-huge font-bold text-main tracking-tight">
+            Notifications
+          </h2>
+          <p class="text-muted mt-1 text-sm">
+            Track important updates across your subscriptions
+          </p>
+        </div>
+        <button
+          class="px-4 py-2 text-sm font-medium rounded-lg text-primary bg-primary/10 hover:bg-primary/20 transition-colors duration-200 border border-primary/20"
+        >
+          Mark All as Read
+        </button>
+      </div>
+    </header>
+  </div>
+
+  <div class="space-y-4">
+    @for(notification of notifications(); track notification.id) {
+    <div
+      class="flex items-start bg-card rounded-xl p-4 shadow-md border border-muted/10 hover:shadow-lg transition-shadow duration-300 group"
+      (click)="onSelectNotification(notification)"
+    >
+      <div class="relative flex-shrink-0 mr-4">
+        <img
+          [src]="notification.serviceId | serviceImage"
+          [alt]="notification.serviceName"
+          class="w-10 h-10 rounded-full object-cover border-2 border-primary/20 bg-white p-0.5 shadow-sm group-hover:scale-105 transition-transform duration-200"
+        />
+      </div>
+
+      <div class="flex-grow min-w-0">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-semibold text-main truncate">
+            Subscription Renewal Alert: {{ notification.serviceName }}
+          </h3>
+          <span class="text-tiny text-muted font-mono ml-4 flex-shrink-0">
+            {{ notification.createdAt | date : "dd-MMM-yyyy" }}
+          </span>
+        </div>
+
+        <p class="text-sm text-muted mt-1">
+          Your {{ notification.serviceName }} subscription is approaching its
+          renewal date. The expected renewal amount is
+          <span class="font-medium text-main">{{
+            notification.cost | currency
+          }}</span
+          >.
+        </p>
+
+        <div class="mt-2 flex flex-wrap gap-2 items-center">
+          <span
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
+          >
+            {{ notification.categoryName }}
+          </span>
+
+          <span
+            class="font-mono text-tiny text-muted bg-app px-2 py-1 rounded-md"
+          >
+            Type: {{ notification.type }}
+          </span>
+
+          <span
+            class="font-mono text-tiny text-muted bg-app px-2 py-1 rounded-md"
+          >
+            Price: {{ notification.cost | currency }}
+          </span>
+        </div>
+      </div>
+
+      <div class="flex-shrink-0 ml-4 self-center">
+        <button
+          class="p-2 rounded-full text-muted hover:text-primary hover:bg-primary/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+          title="View Details"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    } @empty {
+    <div
+      class="bg-card rounded-2xl p-12 text-center shadow-xl border border-muted/10"
+    >
+      <p class="text-lg text-muted">
+        🎉 You are all caught up! No new notifications found.
+      </p>
+    </div>
+    }
+  </div>
+  @if(openModal()){
+  <div
+    class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+    (click)="onCloseModal()"
+  >
+    <div
+      class="bg-card border border-card rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Header -->
+      <div class="p-6 border-b border-card flex items-center justify-between">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3 text-white font-bold"
+          >
+            🎶
+          </div>
+          <h3 class="text-xl font-bold text-main">
+            {{ selectedNotification()?.serviceName }} Reminder
+          </h3>
+        </div>
+
+        <button
+          class="text-muted hover:text-main transition duration-200"
+          aria-label="Close"
+          (click)="onCloseModal()"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 space-y-5">
+        <p class="text-2xl font-semibold text-primary">
+          {{ selectedNotification()?.title }}
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="flex flex-col">
+            <span class="text-muted font-medium">Renewal Date</span>
+            <span class="text-lg font-mono text-main">
+              {{ selectedNotification()?.renewalDate | date : "MMM dd, yyyy" }}
+            </span>
+          </div>
+
+          <div class="flex flex-col text-right">
+            <span class="text-muted font-medium">Renewal Cost</span>
+            <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+              {{ selectedNotification()?.cost | currency }}
+            </span>
+          </div>
+        </div>
+
+        <hr class="border-card" />
+
+        <div class="space-y-3">
+          <div class="flex flex-wrap gap-2">
+            <span
+              class="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
+            >
+              Category: {{ selectedNotification()?.categoryName }}
+            </span>
+
+            <span
+              class="px-3 py-1 text-xs font-medium rounded-full bg-app text-muted border border-muted"
+            >
+              Type: {{ selectedNotification()?.type }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  }
+</div>
