@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import {
   ActiveStatus,
   AllSubscription,
@@ -7,29 +7,43 @@ import {
   Subscription,
 } from '../../../../shared/models/subscription.model';
 import { SubscriptionService } from '../../../../shared/services/subscription.service';
-import { CurrencyPipe, DatePipe, NgFor } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ServiceImagePipe } from '../../../../shared/pipes/service-image.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { Service } from '../../../../shared/models/service.model';
 import { ServiceService } from '../../../../shared/services/service.service';
 import { SubscriptionType } from '../../../../shared/models/subscription-type.model';
 import { SubscriptionTypeService } from '../../../../shared/services/subscription-type.service';
-import { forkJoin } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { forkJoin, merge } from 'rxjs';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-subscriptions-list',
-  imports: [ServiceImagePipe, DatePipe, MatIconModule, CurrencyPipe],
+  standalone: true,
+  imports: [
+    ServiceImagePipe,
+    DatePipe,
+    MatIconModule,
+    CurrencyPipe,
+    ReactiveFormsModule,
+  ],
   templateUrl: './subscriptions-list.component.html',
   styleUrl: './subscriptions-list.component.scss',
 })
 export class SubscriptionsListComponent {
-  addSubscription() {
-    this.openModal();
-  }
+  private destroyRef = inject(DestroyRef);
 
-  BillingPeriodUnit = BillingPeriodUnit;
-  billingPeriodUnits = Object.values(BillingPeriodUnit);
+  private subscriptionService = inject(SubscriptionService);
+  private serviceService = inject(ServiceService);
+  private subscriptionTypeService = inject(SubscriptionTypeService);
+  private router = inject(Router);
 
   subscriptions = signal<GetAllSubscriptionsResponse>({
     totalItem: 0,
@@ -38,124 +52,294 @@ export class SubscriptionsListComponent {
     upcomingRenewal: 0,
     subscriptions: [],
   });
-  ActiveStatus = ActiveStatus;
-  private subscriptionService = inject(SubscriptionService);
-  private serviceService = inject(ServiceService);
-  private subscriptionTypeService = inject(SubscriptionTypeService);
 
-  ngOnInit() {
-    this.loadSubscriptions();
-  }
-  loadSubscriptions() {
-    this.subscriptionService.getSubscriptions().subscribe({
-      next: (data) => {
-        this.subscriptions.set(data);
-        console.log(this.subscriptions());
-      },
-      error: (error) => {
-        console.error('Error fetching subscriptions:', error);
-      },
-      complete: () => console.log('Finished fetching subscriptions.'),
-    });
-  }
-  onDelete(_t48: AllSubscription) {
-    throw new Error('Method not implemented.');
-  }
-  onEdit(_t48: AllSubscription) {
-    throw new Error('Method not implemented.');
-  }
+  BillingPeriodUnit = BillingPeriodUnit;
+  billingPeriodUnits = Object.values(BillingPeriodUnit);
+  ActiveStatus = ActiveStatus;
+
+  statusOptions = [
+    { label: 'Active', value: ActiveStatus.Active },      
+    { label: 'Cancelled', value: ActiveStatus.Cancelled }, 
+    { label: 'Paused', value: ActiveStatus.Paused }       
+  ];
+
   isModalOpen = signal(false);
+  isDropdownOpen = signal(false);
+  isSubscriptionTypeDropdownOpen = signal(false);
+  isDeleteModalOpen = signal(false);
+  showDetailsModal = signal(false);
+  editSubscriptionModal = signal(false);
+
+  searchQuery = signal('');
+  searchSubscriptionTypeQuery = signal('');
 
   services = signal<Array<Service>>([]);
   subscriptionTypes = signal<Array<SubscriptionType>>([]);
 
-  openModal() {
-    this.addSubscriptionForm.reset({ 
-      status: 1, 
-      billingPeriodUnit: BillingPeriodUnit.Month, 
-      billingFrequency: 1 
-    });
-    this.searchQuery.set('');
+  subscriptionToDelete = signal<AllSubscription | null>(null);
+
+  addSubscriptionForm = new FormGroup({
+    serviceId: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+    ]),
+    subscriptionTypeId: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(1),
+    ]),
+    cost: new FormControl<number | null>(null, [
+      Validators.required,
+      Validators.min(0),
+    ]),
+    billingFrequency: new FormControl(1, [
+      Validators.required,
+      Validators.min(1),
+    ]),
+    billingPeriodUnit: new FormControl(BillingPeriodUnit.Month, [
+      Validators.required,
+    ]),
+    purchaseDate: new FormControl<string>('', [Validators.required]),
+    renewalDate: new FormControl({ value: '', disabled: true }, [
+      Validators.required,
+    ]),
+    status: new FormControl(0, Validators.required),
+  });
+
+  ngOnInit() {
+    this.loadSubscriptions();
+    this.setupAutoCalculation();
+  }
+
+  setupAutoCalculation() {
+    merge(
+      this.addSubscriptionForm.get('purchaseDate')!.valueChanges,
+      this.addSubscriptionForm.get('billingFrequency')!.valueChanges,
+      this.addSubscriptionForm.get('billingPeriodUnit')!.valueChanges
+    )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.calculateRenewalDate();
+      });
+  }
+
+  calculateRenewalDate() {
+    const purchaseDateStr = this.addSubscriptionForm.get('purchaseDate')?.value;
+    const frequency = this.addSubscriptionForm.get('billingFrequency')?.value;
+    const periodUnit = this.addSubscriptionForm.get('billingPeriodUnit')?.value;
+
+    if (purchaseDateStr && frequency && periodUnit) {
+      const parts = purchaseDateStr.split('-');
+      const date = new Date(
+        parseInt(parts[0]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2])
+      );
+
+      switch (periodUnit) {
+        case BillingPeriodUnit.Day:
+          date.setDate(date.getDate() + frequency);
+          break;
+        case BillingPeriodUnit.Week:
+          date.setDate(date.getDate() + frequency * 7);
+          break;
+        case BillingPeriodUnit.Month:
+          date.setMonth(date.getMonth() + frequency);
+          break;
+        case BillingPeriodUnit.Year:
+          date.setFullYear(date.getFullYear() + frequency);
+          break;
+      }
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
+      this.addSubscriptionForm.patchValue({ renewalDate: formattedDate });
+    }
+  }
+
+  addSubscription() {
+    this.openModal();
+  }
+
+  loadDropdownData() {
     forkJoin({
       services: this.serviceService.getServices(),
       subscriptionTypes: this.subscriptionTypeService.getSubscriptionTypes(),
     }).subscribe(({ services, subscriptionTypes }) => {
       this.services.set(services);
       this.subscriptionTypes.set(subscriptionTypes);
+      
     });
+  }
+
+  openModal() {
+    this.addSubscriptionForm.reset({
+      status: 0,
+      billingPeriodUnit: BillingPeriodUnit.Month,
+      billingFrequency: 1,
+      purchaseDate: '',
+    });
+    this.searchQuery.set('');
+    this.searchSubscriptionTypeQuery.set('');
+
+    this.loadDropdownData();
     this.isModalOpen.set(true);
   }
-isDropdownOpen = signal(false);
-isSubscriptionTypeDropdownOpen = signal(false);
-
-searchQuery = signal('');
-searchSubscriptionTypeQuery = signal('');
-
-  filteredServices = computed(() => {
-    const query = this.searchQuery().toLowerCase();
-    return this.services().filter(service => 
-      service.serviceName.toLowerCase().includes(query)
-    );
-  });
-
-  toggleDropdown(state: boolean) {
-    setTimeout(() => {
-      this.isDropdownOpen.set(state);
-    }, 200);
-  }
-
-  selectService(service: Service) {
-    this.searchQuery.set(service.serviceName);
-    
-    this.addSubscriptionForm.patchValue({ serviceId: service.id });
-    
-    this.isDropdownOpen.set(false);
-  }
-
-  // SubscriptionType
-  filteredSubscriptionType = computed(() => {
-    const query = this.searchSubscriptionTypeQuery().toLowerCase();
-    return this.subscriptionTypes().filter(subscriptionType => 
-      subscriptionType.typeName.toLowerCase().includes(query)
-    );
-  });
-
-  toggleSubscriptionTypeDropdown(state: boolean) {
-    setTimeout(() => {
-      this.isSubscriptionTypeDropdownOpen.set(state);
-    }, 200);
-  }
-
-  selectSubscriptionType(subscriptionType: SubscriptionType) {
-    this.searchSubscriptionTypeQuery.set(subscriptionType.typeName);
-    
-    this.addSubscriptionForm.patchValue({ subscriptionTypeId: subscriptionType.id });
-    
-    this.isSubscriptionTypeDropdownOpen.set(false);
-  }
-
-  saveSubscription() {
-    if (this.addSubscriptionForm.invalid) {
-      this.addSubscriptionForm.markAllAsTouched(); 
-      return;
-    }
-    
-    console.log('Form Data:', this.addSubscriptionForm.value);
-    this.closeModal();
-  }
-  addSubscriptionForm = new FormGroup({
-    serviceId: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
-    subscriptionTypeId: new FormControl<number | null>(null, [Validators.required, Validators.min(1)]),
-    cost: new FormControl<number | null>(null, [Validators.required, Validators.min(0)]),
-    billingFrequency: new FormControl(1, [Validators.required, Validators.min(1)]),
-    billingPeriodUnit: new FormControl(BillingPeriodUnit.Month, [Validators.required]), // Default to Month
-    purchaseDate: new FormControl('', [Validators.required]),
-    renewalDate: new FormControl('', [Validators.required]),
-    status: new FormControl(1, Validators.required) // Default Active (1)
-  });
 
   closeModal() {
     this.isModalOpen.set(false);
   }
-}
 
+  saveSubscription() {
+    if (this.addSubscriptionForm.invalid) {
+      this.addSubscriptionForm.markAllAsTouched();
+      return;
+    }
+    const formData = this.addSubscriptionForm.getRawValue();
+    console.log('Final Form Data:', formData);
+    this.subscriptionService.createSubscription(formData).subscribe({
+      next: (data) => {
+        console.log('Subscription created:', data);
+        this.loadSubscriptions();
+      },
+    });
+
+    this.closeModal();
+  }
+  updateSubscription() {
+    if (this.addSubscriptionForm.invalid) {
+      this.addSubscriptionForm.markAllAsTouched();
+      return;
+    }
+    if(this.selectedSubscription()){
+      const id = this.selectedSubscription()!.id;
+      const formData = this.addSubscriptionForm.getRawValue();
+      console.log('Final Form Data:', formData);
+      this.subscriptionService.updateSubscription(id,formData).subscribe({
+        next: (data) => {
+          console.log('Subscription created:', data);
+          this.closeEditModal();
+          this.loadSubscriptions();
+        },
+      });
+    }
+  }
+
+  filteredServices = computed(() => {
+    const query = this.searchQuery().toLowerCase();
+    return this.services().filter((s) =>
+      s.serviceName.toLowerCase().includes(query)
+    );
+  });
+
+  filteredSubscriptionType = computed(() => {
+    const query = this.searchSubscriptionTypeQuery().toLowerCase();
+    return this.subscriptionTypes().filter((t) =>
+      t.typeName.toLowerCase().includes(query)
+    );
+  });
+
+  toggleDropdown(state: boolean) {
+    setTimeout(() => this.isDropdownOpen.set(state), 200);
+  }
+
+  selectService(service: Service) {
+    this.searchQuery.set(service.serviceName);
+    this.addSubscriptionForm.patchValue({ serviceId: service.id });
+    this.isDropdownOpen.set(false);
+  }
+
+  toggleSubscriptionTypeDropdown(state: boolean) {
+    setTimeout(() => this.isSubscriptionTypeDropdownOpen.set(state), 200);
+  }
+
+  selectSubscriptionType(type: SubscriptionType) {
+    this.searchSubscriptionTypeQuery.set(type.typeName);
+    this.addSubscriptionForm.patchValue({ subscriptionTypeId: type.id });
+    this.isSubscriptionTypeDropdownOpen.set(false);
+  }
+
+  loadSubscriptions() {
+    this.subscriptionService.getSubscriptions().subscribe({
+      next: (data) => this.subscriptions.set(data),
+      error: (e) => console.error(e),
+    });
+  }
+
+  onDelete(subscription: AllSubscription) {
+    this.subscriptionToDelete.set(subscription);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  closeDeleteModal() {
+    this.isDeleteModalOpen.set(false);
+    setTimeout(() => this.subscriptionToDelete.set(null), 200);
+  }
+
+  confirmDelete() {
+    const sub = this.subscriptionToDelete();
+    if (sub) {
+      this.subscriptionService.deleteSubscription(sub.id).subscribe({
+        next: () => {
+          console.log(`Deleted ${sub.serviceName}`);
+          this.loadSubscriptions();
+          this.closeDeleteModal();
+        },
+        error: (err) => console.error('Delete failed', err),
+      });
+    }
+  }
+  selectedSubscription = signal<Subscription | null>(null);
+
+  onView(sub: AllSubscription) {
+    this.loadSubscriptionFullDetails(sub.id);
+    this.showDetailsModal.set(true);
+  }
+
+  onEdit(sub: AllSubscription) {
+
+    this.searchQuery.set(sub.serviceName);
+    this.searchSubscriptionTypeQuery.set(sub.subscriptionTypeName);
+
+    this.loadDropdownData();
+    this.loadSubscriptionFullDetails(sub.id);
+
+    this.editSubscriptionModal.set(true);
+  }
+
+  loadSubscriptionFullDetails(id: number) {
+    this.subscriptionService.getSubscriptionById(id).subscribe({
+      next: (data) => {
+        this.selectedSubscription.set(data);
+        const sub = this.selectedSubscription();
+        this.addSubscriptionForm.patchValue({
+          serviceId: sub?.serviceId,
+          subscriptionTypeId: sub?.subscriptionTypeId,
+          cost: sub?.cost,
+          billingFrequency: sub?.billingFrequency,
+          billingPeriodUnit: sub?.billingPeriodUnit,
+          purchaseDate: sub?.purchaseDate
+            ? new Date(sub?.purchaseDate).toISOString().split('T')[0]
+            : '',
+          renewalDate: sub?.renewalDate
+            ? new Date(sub?.renewalDate).toISOString().split('T')[0]
+            : '',
+          status: sub?.status,
+        });
+      },
+      error: (e) => console.error(e),
+    });
+  }
+
+  closeViewModal() {
+    this.showDetailsModal.set(false);
+    setTimeout(() => this.selectedSubscription.set(null), 200);
+  }
+
+  closeEditModal() {
+    this.editSubscriptionModal.set(false);
+    this.addSubscriptionForm.reset(); // Clear form on close
+  }
+}
