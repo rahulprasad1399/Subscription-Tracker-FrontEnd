@@ -37,7 +37,7 @@ export class UserLayoutComponent {
     route: '/notifications'
   }
 ];
-isDarkMode = true;
+isDarkMode = false;
 
 ngOnInit() {
   const savedTheme = localStorage.getItem('theme');
