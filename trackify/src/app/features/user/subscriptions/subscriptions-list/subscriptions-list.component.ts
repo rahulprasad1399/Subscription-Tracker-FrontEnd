@@ -18,6 +18,7 @@ import { forkJoin, merge } from 'rxjs';
 import {
   FormControl,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -33,6 +34,7 @@ import { Router } from '@angular/router';
     MatIconModule,
     CurrencyPipe,
     ReactiveFormsModule,
+    FormsModule,
   ],
   templateUrl: './subscriptions-list.component.html',
   styleUrl: './subscriptions-list.component.scss',
@@ -44,6 +46,8 @@ export class SubscriptionsListComponent {
   private serviceService = inject(ServiceService);
   private subscriptionTypeService = inject(SubscriptionTypeService);
   private router = inject(Router);
+
+  isLoading = signal<boolean>(false);
 
   subscriptions = signal<GetAllSubscriptionsResponse>({
     totalItem: 0,
@@ -58,9 +62,9 @@ export class SubscriptionsListComponent {
   ActiveStatus = ActiveStatus;
 
   statusOptions = [
-    { label: 'Active', value: ActiveStatus.Active },      
-    { label: 'Cancelled', value: ActiveStatus.Cancelled }, 
-    { label: 'Paused', value: ActiveStatus.Paused }       
+    { label: 'Active', value: ActiveStatus.Active },
+    { label: 'Cancelled', value: ActiveStatus.Cancelled },
+    { label: 'Paused', value: ActiveStatus.Paused },
   ];
 
   isModalOpen = signal(false);
@@ -69,6 +73,8 @@ export class SubscriptionsListComponent {
   isDeleteModalOpen = signal(false);
   showDetailsModal = signal(false);
   editSubscriptionModal = signal(false);
+
+  searchText: string = '';
 
   searchQuery = signal('');
   searchSubscriptionTypeQuery = signal('');
@@ -170,7 +176,6 @@ export class SubscriptionsListComponent {
     }).subscribe(({ services, subscriptionTypes }) => {
       this.services.set(services);
       this.subscriptionTypes.set(subscriptionTypes);
-      
     });
   }
 
@@ -213,11 +218,11 @@ export class SubscriptionsListComponent {
       this.addSubscriptionForm.markAllAsTouched();
       return;
     }
-    if(this.selectedSubscription()){
+    if (this.selectedSubscription()) {
       const id = this.selectedSubscription()!.id;
       const formData = this.addSubscriptionForm.getRawValue();
       console.log('Final Form Data:', formData);
-      this.subscriptionService.updateSubscription(id,formData).subscribe({
+      this.subscriptionService.updateSubscription(id, formData).subscribe({
         next: (data) => {
           console.log('Subscription created:', data);
           this.closeEditModal();
@@ -262,10 +267,19 @@ export class SubscriptionsListComponent {
   }
 
   loadSubscriptions() {
-    this.subscriptionService.getSubscriptions().subscribe({
-      next: (data) => this.subscriptions.set(data),
-      error: (e) => console.error(e),
-    });
+    this.isLoading.set(true);
+    setTimeout(() => {
+      this.subscriptionService.getSubscriptions().subscribe({
+        next: (data) => {
+          this.subscriptions.set(data);
+          this.isLoading.set(false);
+        },
+        error: (e) => {
+          console.error(e);
+          this.isLoading.set(false);
+        },
+      });
+    }, 500);
   }
 
   onDelete(subscription: AllSubscription) {
@@ -299,7 +313,6 @@ export class SubscriptionsListComponent {
   }
 
   onEdit(sub: AllSubscription) {
-
     this.searchQuery.set(sub.serviceName);
     this.searchSubscriptionTypeQuery.set(sub.subscriptionTypeName);
 
@@ -342,4 +355,6 @@ export class SubscriptionsListComponent {
     this.editSubscriptionModal.set(false);
     this.addSubscriptionForm.reset(); // Clear form on close
   }
+
+  onSearchChange() {}
 }

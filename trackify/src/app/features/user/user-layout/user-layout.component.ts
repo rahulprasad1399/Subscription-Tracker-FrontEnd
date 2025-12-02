@@ -1,9 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../../../shared/services/notification.service';
+import { UsersignupService } from '../../../shared/services/userAuth.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -20,13 +21,16 @@ import { NotificationService } from '../../../shared/services/notification.servi
 export class UserLayoutComponent {
   http = inject(HttpClient);
   notificationService = inject(NotificationService);
+  router = inject(Router)
+
+  authService = inject(UsersignupService);
 
   notificationCount = this.notificationService.notificationCount;
 
   menuItems: any[] = [
     {
       label: 'Dashboard',
-      icon: 'dashboard', // Material icon name
+      icon: 'dashboard', 
       route: '/dashboard',
     },
     {
@@ -72,5 +76,14 @@ export class UserLayoutComponent {
       document.documentElement.removeAttribute('data-theme');
       localStorage.setItem('theme', 'light');
     }
+  }
+
+  onLogout() {
+    this.authService.logOut().subscribe({
+      next: (res) => {
+        this.router.navigate(['/login'])
+      },
+      error: (err) => console.log(err),
+    });
   }
 }

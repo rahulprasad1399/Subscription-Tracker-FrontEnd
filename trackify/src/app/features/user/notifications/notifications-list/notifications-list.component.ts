@@ -22,23 +22,29 @@ export class NotificationsListComponent implements OnInit {
 
   openModal = signal<boolean>(false);
 
+  isLoading = signal<boolean>(false);
+
   ngOnInit(): void {
     this.getAllNotification();
   }
 
   getAllNotification() {
-    this.notificationService.getAllNotifications().subscribe({
-      next: (notificationList) => {
-        this.notifications.set(notificationList);
+    this.isLoading.set(true);
+    setTimeout(() => {
+      this.notificationService.getAllNotifications().subscribe({
+        next: (notificationList) => {
+          this.notifications.set(notificationList);
 
-        const unread = notificationList.filter((n) => !n.isRead);
+          const unread = notificationList.filter((n) => !n.isRead);
 
-        this.notificationCount.set(unread.length);
+          this.notificationCount.set(unread.length);
 
-        this.markUsReadNotificationArr.set(unread.map((n) => n.id));
-      },
-      error: (err) => console.log(err),
-    });
+          this.markUsReadNotificationArr.set(unread.map((n) => n.id));
+          this.isLoading.set(false);
+        },
+        error: (err) => this.isLoading.set(false),
+      });
+    }, 500);
   }
 
   onOpenModal() {

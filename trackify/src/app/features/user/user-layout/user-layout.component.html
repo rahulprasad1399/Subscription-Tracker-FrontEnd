@@ -13,46 +13,44 @@
     </div>
 
     <nav class="flex-1 py-6 px-3 space-y-1">
-      @for (item of menuItems; track item.label) { @if(item.label === "Notifications") {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="bg-primary/10 text-primary border-r-4 border-primary"
-          class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-app group/item"
-        >
-          <div class="relative mr-3">
-            <mat-icon
-              class="min-w-[24px] transition-opacity opacity-60 group-hover/item:opacity-100"
-            >
-              {{ item.icon }}
-            </mat-icon>
-        
-            @if (notificationCount() > 0) {
-              <span
-                class="absolute top-0 right-0 bg-red-500 text-white text-[6px] font-bold 
-                w-3 h-3 flex items-center justify-center rounded-full shadow-lg"
-              >
-                {{notificationCount()}}
-              </span>
-            }
-          </div>
-        
-          <span
-            class="opacity-0 w-0 group-hover:w-full group-hover:opacity-100 transition-all duration-300 whitespace-nowrap overflow-hidden 
-            flex items-center justify-between"
+      @for (item of menuItems; track item.label) { @if(item.label ===
+      "Notifications") {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="bg-primary/10 text-primary border-r-4 border-primary"
+        class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-app group/item"
+      >
+        <div class="relative mr-3">
+          <mat-icon
+            class="min-w-[24px] transition-opacity opacity-60 group-hover/item:opacity-100"
           >
-          <div>{{ item.label }} </div>
-            
-            @if (notificationCount() > 0) {
-              <span
-                class=" bg-red-500 text-white text-[10px] font-bold 
-                w-5 h-5 flex items-center justify-center rounded-full shadow-lg"
-              >
-                {{notificationCount()}}
-              </span>
-            }
+            {{ item.icon }}
+          </mat-icon>
+
+          @if (notificationCount() > 0) {
+          <span
+            class="absolute top-0 right-0 bg-red-500 text-white text-[6px] font-bold w-3 h-3 flex items-center justify-center rounded-full shadow-lg"
+          >
+            {{ notificationCount() }}
           </span>
-        </a>
-        }@else{
+          }
+        </div>
+
+        <span
+          class="opacity-0 w-0 group-hover:w-full group-hover:opacity-100 transition-all duration-300 whitespace-nowrap overflow-hidden flex items-center justify-between"
+        >
+          <div>{{ item.label }}</div>
+
+          @if (notificationCount() > 0) {
+          <span
+            class="bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-lg"
+          >
+            {{ notificationCount() }}
+          </span>
+          }
+        </span>
+      </a>
+      }@else{
       <a
         [routerLink]="item.route"
         routerLinkActive="bg-primary/10 text-primary border-r-4 border-primary"
@@ -76,19 +74,39 @@
     <div
       class="p-4 border-t border-gray-100 dark:border-gray-800 whitespace-nowrap"
     >
-      <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 min-w-[2.5rem] rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold"
-        >
-          U
+      <div class="flex justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 min-w-[2.5rem] rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold"
+          >
+            U
+          </div>
+
+          <div
+            class="opacity-0 w-0 group-hover:w-auto group-hover:opacity-100 transition-all duration-300 overflow-hidden"
+          >
+            <p class="text-sm font-semibold">
+              {{ authService.user()?.fullName || "UserName" }}
+            </p>
+            <p class="text-xs text-muted">
+              {{ authService.user()?.email || "user&#64;example.com" }}
+            </p>
+          </div>
         </div>
 
-        <div
-          class="opacity-0 w-0 group-hover:w-auto group-hover:opacity-100 transition-all duration-300 overflow-hidden"
-        >
-          <p class="text-sm font-semibold">User Name</p>
-          <p class="text-xs text-muted">user&#64;example.com</p>
-        </div>
+        <button class="cursor-pointer" (click)="onLogout()">
+          <svg
+            [attr.fill]="isDarkMode ? '#fff' : '#000'"
+            width="16px"
+            height="16px"
+            viewBox="0 0 1024 1024"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M116.832 543.664H671.28c17.696 0 32-14.336 32-32s-14.304-32-32-32H118.832l115.76-115.76c12.496-12.496 12.496-32.752 0-45.248s-32.752-12.496-45.248 0l-189.008 194 189.008 194c6.256 6.256 14.432 9.376 22.624 9.376s16.368-3.12 22.624-9.376c12.496-12.496 12.496-32.752 0-45.248zM959.664 0H415.663c-35.36 0-64 28.656-64 64v288h64.416V103.024c0-21.376 17.344-38.72 38.72-38.72h464.72c21.391 0 38.72 17.344 38.72 38.72l1.007 818.288c0 21.376-17.328 38.72-38.72 38.72H454.816c-21.376 0-38.72-17.344-38.72-38.72V670.944l-64.416.08V960c0 35.344 28.64 64 64 64h543.984c35.36 0 64.016-28.656 64.016-64V64c-.015-35.344-28.671-64-64.015-64z"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   </aside>
