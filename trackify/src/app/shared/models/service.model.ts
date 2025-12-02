@@ -38,3 +38,19 @@ export interface LoginResponse {
   email : string,
   fullName : string
 }
+
+export interface CreateService {
+  serviceName : string,
+  categoryId : number
+}
+
+export interface CreateServiceForm{
+  serviceName : FormControl<string>,
+  categoryId : FormControl<number>
+}
+
+export interface AuthUser {
+  fullName: string;
+  id: number;
+  email: string;
+}

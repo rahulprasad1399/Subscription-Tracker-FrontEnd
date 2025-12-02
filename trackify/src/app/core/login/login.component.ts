@@ -69,6 +69,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.userSignup.loginUser(this.loginForm.getRawValue()).subscribe({
         next: (res) => {
+          this.userSignup.user.set(res);
           this.snack.open('Login successful!', 'Ok', {
             duration: 3000,
           });

@@ -1,5 +1,46 @@
+@if(isLoading()){
+<div class="w-full max-w-5xl mx-auto px-4 py-8 relative animate-pulse">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <div class="h-7 w-40 bg-muted/20 rounded-md"></div>
+      <div class="h-4 w-56 bg-muted/10 rounded-md mt-2"></div>
+    </div>
+
+    <div class="h-9 w-28 bg-muted/20 rounded-lg"></div>
+  </div>
+
+  <div class="space-y-4">
+    <!-- Repeat skeleton card 4 times -->
+    @for (x of [1,2,3,4]; track x) {
+    <div
+      class="flex items-center bg-card rounded-xl p-4 shadow-md border border-muted/10"
+    >
+      <!-- Image circle -->
+      <div class="flex-shrink-0 mr-4">
+        <div class="w-10 h-10 rounded-full bg-muted/20"></div>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-grow min-w-0">
+        <div class="flex items-center justify-between">
+          <!-- Title -->
+          <div class="h-4 w-60 bg-muted/20 rounded-md"></div>
+
+          <!-- Date -->
+          <div class="h-3 w-20 bg-muted/10 rounded-md ml-4"></div>
+        </div>
+      </div>
+
+      <!-- Arrow icon -->
+      <div class="flex-shrink-0 ml-4">
+        <div class="w-5 h-5 bg-muted/20 rounded-full"></div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+} @else {
 <div class="w-full max-w-5xl mx-auto px-4 py-8">
-  <!-- Header Section -->
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-huge font-bold text-main tracking-tight">
@@ -10,20 +51,32 @@
       </p>
     </div>
     <div
-      class="bg-card px-4 py-2 rounded-full shadow-sm border border-muted/10"
+      class="group flex items-center gap-2 bg-card px-4 py-2 rounded-full shadow-sm border border-muted/10 cursor-pointer hover:bg-muted/5 transition-colors duration-200"
+      (click)="addSubscription()"
     >
-      <span class="text-main font-semibold">{{ services().length }}</span>
-      <span class="text-muted ml-1 text-sm">Total</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="text-main group-hover:scale-110 transition-transform duration-200"
+      >
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span class="text-main text-sm font-semibold">New Subscription</span>
     </div>
   </div>
-
-  <!-- Card Container -->
   <div
     class="bg-card rounded-2xl shadow-xl border border-muted/10 overflow-hidden transition-colors duration-300"
   >
     <div class="overflow-x-auto">
       <table class="w-full border-collapse text-left">
-        <!-- Table Header -->
         <thead>
           <tr class="border-b border-muted/10 bg-app/50">
             <th
@@ -36,24 +89,21 @@
             >
               Service Name
             </th>
-            <th
-              class="py-4 px-6 font-semibold text-tiny uppercase tracking-wider text-muted"
-            >
-              Category ID
-            </th>
+
             <th
               class="py-4 px-6 font-semibold text-tiny uppercase tracking-wider text-muted"
             >
               Category
             </th>
+            <th
+              class="py-4 px-6 font-semibold text-tiny uppercase tracking-wider text-muted w-3"
+            ></th>
           </tr>
         </thead>
 
-        <!-- Table Body -->
         <tbody class="divide-y divide-muted/10">
           @for(service of services(); track service.id) {
           <tr class="group hover:bg-primary/5 transition-colors duration-200">
-            <!-- Icon Column -->
             <td class="py-4 px-6 align-middle">
               <div class="relative">
                 <img
@@ -64,29 +114,67 @@
               </div>
             </td>
 
-            <!-- Service Name -->
             <td class="py-4 px-6 align-middle">
               <span class="text-main font-medium text-base">{{
                 service.serviceName
               }}</span>
             </td>
 
-            <!-- Category ID -->
-            <td class="py-4 px-6 align-middle">
-              <span
-                class="font-mono text-tiny text-muted bg-app px-2 py-1 rounded-md"
-              >
-                #{{ service.categoryId }}
-              </span>
-            </td>
-
-            <!-- Category Name -->
             <td class="py-4 px-6 align-middle">
               <span
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20"
               >
                 {{ service.categoryName }}
               </span>
+            </td>
+
+            <td class="py-4 px-6 align-middle text-right w-3">
+              <div
+                class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
+              >
+                <button
+                  (click)="onEdit(service)"
+                  class="p-2 text-muted hover:text-sky-400 hover:bg-sky-400/10 rounded-full transition-colors duration-200"
+                  title="Edit Subscription"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
+                    ></path>
+                  </svg>
+                </button>
+                <button
+                  (click)="onDelete(service)"
+                  class="p-2 text-muted hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors duration-200"
+                  title="Delete Subscription"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
             </td>
           </tr>
           } @empty {
@@ -101,3 +189,165 @@
     </div>
   </div>
 </div>
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div
+    class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+    (click)="closeModal()"
+  ></div>
+
+  <div
+    class="relative w-full max-w-md bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden"
+  >
+    <div class="flex items-center justify-between p-6 border-b border-white/5">
+      <h3 class="text-xl font-bold text-main">Add New Service Type</h3>
+
+      <button
+        (click)="closeModal()"
+        class="text-gray-400 hover:text-white p-1 rounded-full hover:bg-white/10 transition"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form
+      [formGroup]="serviceForm"
+      (ngSubmit)="saveService()"
+      class="flex flex-col"
+    >
+      <div class="p-6 space-y-5">
+        <div class="space-y-2">
+          <label
+            class="text-xs font-semibold uppercase tracking-wider text-muted"
+          >
+            Service Name
+          </label>
+          <input
+            type="text"
+            formControlName="serviceName"
+            placeholder="e.g. Netflix, Hotstar"
+            class="w-full bg-input border border-white/10 rounded-lg px-4 py-3 text-main focus:outline-none focus:border-teal-500/50"
+          />
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="space-y-2">
+          <label
+            class="text-xs font-semibold uppercase tracking-wider text-muted"
+          >
+            Category
+          </label>
+          <div class="relative">
+            <select
+              formControlName="categoryId"
+              class="w-full bg-input border border-white/10 rounded-lg px-4 py-3 text-main focus:outline-none focus:border-teal-500/50 appearance-none cursor-pointer"
+            >
+              @for (cat of category(); track cat.id) {
+              <option [value]="cat.id">{{ cat.categoryName }}</option>
+              }
+            </select>
+
+            <div
+              class="absolute right-4 top-3.5 pointer-events-none text-gray-500"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="flex justify-end gap-3 p-6 border-t border-white/5 bg-white/5"
+      >
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="serviceForm.invalid"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-teal-600 hover:bg-teal-500 shadow-lg shadow-teal-900/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+} @else if(isdeleteModalOpen()){
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div
+    class="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+    (click)="closeDeleteModal()"
+  ></div>
+
+  <div
+    class="relative w-full max-w-sm bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden transform transition-all scale-100"
+  >
+    <div class="p-6 text-center">
+      <div
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 mb-6"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-red-500"
+        >
+          <path d="M3 6h18"></path>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+
+      <h3 class="text-xl font-bold text-white mb-2">Delete Service?</h3>
+      <p class="text-sm text-gray-400">
+        Do you really want to delete the
+        <span class="text-white font-medium">{{
+          serviceToDelete()?.serviceName
+        }}</span>
+        Service ? <br />This action cannot be undone.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 p-6 border-t border-white/5 bg-white/5">
+      <button
+        (click)="closeDeleteModal()"
+        class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        (click)="confirmDelete()"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+} }
