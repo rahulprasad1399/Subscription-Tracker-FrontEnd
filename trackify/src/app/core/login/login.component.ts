@@ -73,7 +73,7 @@ export class LoginComponent {
             duration: 3000,
           });
           console.log(res);
-          this.router.navigate(['']);
+          this.router.navigate(['/dashboard']);
         },
         error: (err) => {
           this.snack.open('Something went wrong!', 'Close', {

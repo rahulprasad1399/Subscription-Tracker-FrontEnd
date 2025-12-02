@@ -15,7 +15,7 @@
               Monthly Spend
             </div>
             <div class="text-3xl font-bold text-teal-400 mt-3 tracking-tight">
-              {{ subscriptions().moneySpentMonthly }}
+              {{ subscriptions().moneySpentMonthly | currency}}
             </div>
             <div class="text-xs text-muted mt-1 font-medium">Active-based</div>
           </div>

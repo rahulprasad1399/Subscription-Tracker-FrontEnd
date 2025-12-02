@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { UpcomingRenewalData } from '../models/dashbord-models';
 
 @Component({
   selector: 'app-dashbord-upcoming-renewals',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './dashbord-upcoming-renewals.component.scss'
 })
 export class DashbordUpcomingRenewalsComponent {
-
+  @Input() upcomingRenewalData! : UpcomingRenewalData | null
 }

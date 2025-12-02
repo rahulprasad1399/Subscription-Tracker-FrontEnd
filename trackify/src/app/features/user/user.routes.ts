@@ -11,7 +11,7 @@ export const userRoutes: Routes = [
     path: '',
     component: UserLayoutComponent,
     children: [
-      { path: '', component: DashboardLayoutComponent },
+      
       {
         path: 'subscriptions',
         component: SubscriptionLayoutComponent,
@@ -36,9 +36,10 @@ export const userRoutes: Routes = [
       },
       {
         path : '',
-        redirectTo : '',
+        redirectTo : 'dashboard',
         pathMatch : 'full'
-      }
+      },
+      { path: 'dashboard', component: DashboardLayoutComponent },
     ],
   },
   {

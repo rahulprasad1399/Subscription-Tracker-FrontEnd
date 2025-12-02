@@ -26,7 +26,7 @@ export class UserLayoutComponent {
   menuItems: any[] = [
     {
       label: 'Dashboard',
-      icon: 'dashboard', // Material icon name
+      icon: 'dashboard', 
       route: '/dashboard',
     },
     {

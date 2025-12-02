@@ -16,15 +16,23 @@ export class SubscriptionService {
     return this.http.get<GetAllSubscriptionsResponse>(this.apiUrl, {withCredentials : true});
   }
   getSubscriptionById(id: number): Observable<Subscription> {
-    return this.http.get<Subscription>(`${this.apiUrl}/${id}`);
+    return this.http.get<Subscription>(`${this.apiUrl}/${id}`,{
+      withCredentials: true,
+    });
   }
   createSubscription(subscription: any): Observable<number> {
-    return this.http.post<number>(this.apiUrl, subscription);
+    return this.http.post<number>(this.apiUrl, subscription,{
+      withCredentials: true,
+    });
   }
   updateSubscription(id: number, subscription: any): Observable<number> {
-    return this.http.put<number>(`${this.apiUrl}/${id}`, subscription);
+    return this.http.put<number>(`${this.apiUrl}/${id}`, subscription,{
+      withCredentials: true,
+    });
   }
   deleteSubscription(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`,{
+      withCredentials: true,
+    });
   }
 }

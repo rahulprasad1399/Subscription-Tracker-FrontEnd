@@ -1,4 +1,23 @@
-<app-dashbord-summary-cards></app-dashbord-summary-cards>
-<app-dashbord-spending-insights></app-dashbord-spending-insights>
-<app-dashbord-notification></app-dashbord-notification>
-<app-dashbord-upcoming-renewals></app-dashbord-upcoming-renewals>
+<div class="w-full max-w-7xl mx-auto px-4 ">
+    <!-- summary card -->
+    <div>
+        <header>
+            <app-dashbord-summary-cards [cardData]="summaryCardData()"></app-dashbord-summary-cards>
+        </header>
+    </div>
+
+    <!-- chart section -->
+    <div>
+        <app-dashbord-spending-insights [insightsData]="insightsData()"></app-dashbord-spending-insights>
+    </div>
+
+
+    <div>
+        <app-dashbord-notification [notficationData]="notficationData()"></app-dashbord-notification>
+    </div>
+
+
+    <div>
+        <app-dashbord-upcoming-renewals [upcomingRenewalData]="upcomingRenewalData()"></app-dashbord-upcoming-renewals>
+    </div>
+</div>

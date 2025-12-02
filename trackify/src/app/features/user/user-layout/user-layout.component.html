@@ -94,14 +94,14 @@
   </aside>
 
   <main class="flex-1 overflow-y-auto p-8 relative">
-    <header class="mb-8 flex justify-between items-center">
+    <header class="mb-4 flex justify-end items-center">
       <button
         type="button"
         (click)="toggleTheme()"
         [attr.aria-label]="
           isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'
         "
-        class="relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        class="relative inline-flex h-6 w-14 items-center rounded-full transition-colors duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         [ngClass]="{
           'bg-slate-800': isDarkMode,
           'bg-sky-200': !isDarkMode
@@ -110,7 +110,7 @@
         <span class="sr-only">Toggle Theme</span>
 
         <span
-          class="absolute left-1 top-1 flex h-6 w-6 transform items-center justify-center rounded-full shadow-md transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)]"
+          class="absolute left-1 top-1 flex h-4 w-4 transform items-center justify-center rounded-full shadow-md transition-all duration-500 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)]"
           [ngClass]="{
             'translate-x-8 bg-slate-900 text-yellow-300 rotate-[360deg]':
               isDarkMode,

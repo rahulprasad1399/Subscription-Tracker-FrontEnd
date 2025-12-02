@@ -1,1 +1,114 @@
-<p>dashbord-summary-cards works!</p>
+@if(isLoading()){
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-pulse">
+  
+  <!-- Card 1 Skeleton -->
+  <div class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg">
+    <div class="relative z-10 space-y-3">
+      <div class="h-3 w-20 bg-gray-300/40 rounded"></div>
+      <div class="h-8 w-28 bg-gray-300/50 rounded"></div>
+      <div class="h-3 w-24 bg-gray-300/40 rounded"></div>
+    </div>
+  </div>
+
+  <!-- Card 2 Skeleton -->
+  <div class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg">
+    <div class="relative z-10 space-y-3">
+      <div class="h-3 w-20 bg-gray-300/40 rounded"></div>
+      <div class="h-8 w-24 bg-gray-300/50 rounded"></div>
+      <div class="h-3 w-24 bg-gray-300/40 rounded"></div>
+    </div>
+  </div>
+
+  <!-- Card 3 Skeleton -->
+  <div class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg">
+    <div class="relative z-10 space-y-3">
+      <div class="h-3 w-20 bg-gray-300/40 rounded"></div>
+      <div class="h-8 w-16 bg-gray-300/50 rounded"></div>
+      <div class="h-3 w-28 bg-gray-300/40 rounded"></div>
+    </div>
+  </div>
+
+  <!-- Card 4 Skeleton -->
+  <div class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg">
+    <div class="relative z-10 space-y-3">
+      <div class="h-3 w-28 bg-gray-300/40 rounded"></div>
+      <div class="h-8 w-20 bg-gray-300/50 rounded"></div>
+      <div class="h-3 w-28 bg-gray-300/40 rounded"></div>
+    </div>
+  </div>
+
+</div>
+
+}
+@else {
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div
+        class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg group"
+      >
+        <div
+          class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-teal-500/10 blur-2xl group-hover:bg-teal-500/20 transition-all duration-500"
+        ></div>
+        <div class="relative z-10">
+          <div class="text-xs font-semibold uppercase tracking-wider text-muted/80">
+            Monthly Spend
+          </div>
+          <div class="text-3xl font-bold text-teal-400 mt-3 tracking-tight">
+            {{ cardData?.monthlySpend ?? 0 | currency }}
+          </div>
+          <div class="text-xs text-muted mt-1 font-medium">Active-based</div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg group"
+      >
+        <div
+          class="absolute -right-4 -bottom-4 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"
+        ></div>
+        <div class="relative z-10">
+          <div class="text-xs font-semibold uppercase tracking-wider text-muted/80">
+            Yearly Spend
+          </div>
+          <div class="text-3xl font-bold text-sky-400 mt-3 tracking-tight">
+            {{ cardData?.yearlySpend ?? 0 | currency }}
+          </div>
+          <div class="text-xs text-muted mt-1 font-medium">Active-based</div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg group"
+      >
+        <div
+          class="absolute top-1/2 -right-8 w-24 h-24 rounded-full bg-indigo-500/15 blur-2xl transform -translate-y-1/2 group-hover:bg-indigo-500/25 transition-all duration-500"
+        ></div>
+        <div class="relative z-10">
+          <div class="text-xs font-semibold uppercase tracking-wider text-muted/80">
+            Active Now
+          </div>
+          <div class="text-3xl font-bold text-violet-400 mt-3 tracking-tight">
+            {{ cardData?.activeNow ?? 0 }}
+          </div>
+          <div class="text-xs text-muted mt-1 font-medium">
+            Currently active services
+          </div>
+        </div>
+      </div>
+      <div
+        class="relative overflow-hidden bg-card rounded-2xl p-6 border border-white/5 shadow-lg group"
+      >
+        <div
+          class="absolute -right-6 -top-6 w-32 h-32 rounded-full bg-orange-500/10 blur-2xl group-hover:bg-orange-500/20 transition-all duration-500"
+        ></div>
+        <div class="relative z-10">
+          <div class="text-xs font-semibold uppercase tracking-wider text-muted/80">
+            Average Cost Per Sub
+          </div>
+          <div class="text-3xl font-bold text-orange-400 mt-3 tracking-tight">
+            {{ cardData?.averageCostPerSub ?? 0 }}
+          </div>
+          <div class="text-xs text-muted mt-1 font-medium">Due within the week</div>
+        </div>
+      </div>
+    </div>
+}
+
