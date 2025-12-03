@@ -79,11 +79,7 @@
       <table class="w-full border-collapse text-left">
         <thead>
           <tr class="border-b border-muted/10 bg-app/50">
-            <th
-              class="py-4 px-6 font-semibold text-tiny uppercase tracking-wider text-muted"
-            >
-              Icon
-            </th>
+            
             <th
               class="py-4 px-6 font-semibold text-tiny uppercase tracking-wider text-muted"
             >
@@ -104,20 +100,21 @@
         <tbody class="divide-y divide-muted/10">
           @for(service of services(); track service.id) {
           <tr class="group hover:bg-primary/5 transition-colors duration-200">
-            <td class="py-4 px-6 align-middle">
-              <div class="relative">
-                <img
-                  [src]="service.id | serviceImage"
-                  alt="{{ service.serviceName }}"
-                  class="w-10 h-10 rounded-full object-cover border border-muted/20 bg-white p-0.5 shadow-sm group-hover:scale-110 transition-transform duration-200"
-                />
-              </div>
-            </td>
+       
 
-            <td class="py-4 px-6 align-middle">
-              <span class="text-main font-medium text-base">{{
-                service.serviceName
-              }}</span>
+            <td class="py-4 px-6 align-middle flex items-center">
+              <div class="flex items-center">
+                <div class="relative">
+                  <img
+                    [src]="service.id | serviceImage"
+                    alt="{{ service.serviceName }}"
+                    class="w-8 h-8 rounded-full object-cover border border-muted/20 bg-white p-0.5 shadow-sm group-hover:scale-110 transition-transform duration-200"
+                  />
+                </div>
+                <span class="text-main pl-4 font-medium text-base">{{
+                  service.serviceName
+                }}</span>
+              </div>
             </td>
 
             <td class="py-4 px-6 align-middle">
@@ -132,6 +129,7 @@
               <div
                 class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
               >
+              
                 <button
                   (click)="onEdit(service)"
                   class="p-2 text-muted hover:text-sky-400 hover:bg-sky-400/10 rounded-full transition-colors duration-200"
