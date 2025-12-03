@@ -8,6 +8,7 @@ import {
   OtpData,
   RegisterResponse,
   RegisterUser,
+  UpdateUser,
   UserData,
 } from '../models/service.model';
 
@@ -46,5 +47,13 @@ export class UsersignupService {
     return this.http.post(`${this.apiUrl}/verify-otp`,otpData,{
       withCredentials : true
     })
+  }
+
+  updateUser(userData : UpdateUser){
+    return this.http.put(`${this.apiUrl}`,userData,{withCredentials : true})
+  }
+
+  getUserById(){
+    return this.http.get<UpdateUser>(`${this.apiUrl}/profile`,{withCredentials : true})
   }
 }

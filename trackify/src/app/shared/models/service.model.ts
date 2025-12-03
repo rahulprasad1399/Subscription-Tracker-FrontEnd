@@ -65,3 +65,9 @@ export interface OtpData {
   otp: string;
   email: string;
 }
+
+export interface UpdateUser {
+  fullName: string,
+  email: string,
+  image: string
+}
