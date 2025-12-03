@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { UploadService } from '../../../shared/services/upload.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -13,6 +15,8 @@ export class UserProfileComponent {
   profilePhotoUrl: string | null = null;
   selectedFile : File | null = null;
 
+  imageUploadService = inject(UploadService)
+
   onPhotoSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -21,9 +25,19 @@ export class UserProfileComponent {
     }
   }
 
-  saveChanges() {
-    console.log(this.fullName)
-    console.log(this.email)
-    console.log(this.profilePhotoUrl)
+  async saveChanges() {
+    let uploadedUrl = this.profilePhotoUrl;
+  
+    if (this.selectedFile) {
+      const response = await firstValueFrom(
+        this.imageUploadService.uploadImage(this.selectedFile)
+      );
+  
+      uploadedUrl = response.imageUrl;
+      console.log("Uploaded URL:", uploadedUrl);
+    }
+  
+    // Now call your Update User API using uploadedUrl  
+    // this.userService.updateProfile({ fullName: this.fullName, email: this.email, photo: uploadedUrl });
   }
 }
