@@ -144,24 +144,31 @@ export class SubscriptionsListComponent {
 
     if (purchaseDateStr && frequency && periodUnit) {
       const parts = purchaseDateStr.split('-');
+      console.log(parts);
       const date = new Date(
         parseInt(parts[0]),
         parseInt(parts[1]) - 1,
         parseInt(parts[2])
       );
+            console.log(date);
+
 
       switch (periodUnit) {
         case BillingPeriodUnit.Day:
           date.setDate(date.getDate() + frequency);
+          console.log(date);
           break;
-        case BillingPeriodUnit.Week:
-          date.setDate(date.getDate() + frequency * 7);
-          break;
-        case BillingPeriodUnit.Month:
-          date.setMonth(date.getMonth() + frequency);
-          break;
-        case BillingPeriodUnit.Year:
-          date.setFullYear(date.getFullYear() + frequency);
+          case BillingPeriodUnit.Week:
+            date.setDate(date.getDate() + frequency * 7);
+            console.log(date);
+            break;
+            case BillingPeriodUnit.Month:
+              date.setMonth(date.getMonth() + frequency);
+              console.log(date);
+              break;
+              case BillingPeriodUnit.Year:
+                date.setFullYear(date.getFullYear() + frequency);
+                console.log(date);
           break;
       }
 
@@ -169,8 +176,9 @@ export class SubscriptionsListComponent {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       const formattedDate = `${year}-${month}-${day}`;
-
+      console.log(formattedDate);
       this.addSubscriptionForm.patchValue({ renewalDate: formattedDate });
+      
     }
   }
 
@@ -335,28 +343,42 @@ export class SubscriptionsListComponent {
   }
 
   loadSubscriptionFullDetails(id: number) {
-    this.subscriptionService.getSubscriptionById(id).subscribe({
-      next: (data) => {
-        this.selectedSubscription.set(data);
-        const sub = this.selectedSubscription();
-        this.addSubscriptionForm.patchValue({
-          serviceId: sub?.serviceId,
-          subscriptionTypeId: sub?.subscriptionTypeId,
-          cost: sub?.cost,
-          billingFrequency: sub?.billingFrequency,
-          billingPeriodUnit: sub?.billingPeriodUnit,
-          purchaseDate: sub?.purchaseDate
-            ? new Date(sub?.purchaseDate).toISOString().split('T')[0]
-            : '',
-          renewalDate: sub?.renewalDate
-            ? new Date(sub?.renewalDate).toISOString().split('T')[0]
-            : '',
-          status: sub?.status,
-        });
-      },
-      error: (e) => console.error(e),
-    });
-  }
+  this.subscriptionService.getSubscriptionById(id).subscribe({
+    next: (data) => {
+      this.selectedSubscription.set(data);
+      const sub = this.selectedSubscription();
+      
+      // Helper function to format date without timezone issues
+      const formatDateForInput = (dateString: string | undefined) => {
+        if (!dateString) return '';
+        
+        // If the date is already in YYYY-MM-DD format, use it directly
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          return dateString;
+        }
+        
+        // Otherwise, parse and format carefully
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      this.addSubscriptionForm.patchValue({
+        serviceId: sub?.serviceId,
+        subscriptionTypeId: sub?.subscriptionTypeId,
+        cost: sub?.cost,
+        billingFrequency: sub?.billingFrequency,
+        billingPeriodUnit: sub?.billingPeriodUnit,
+        purchaseDate: formatDateForInput(sub?.purchaseDate.toString()),
+        renewalDate: formatDateForInput(sub?.renewalDate.toString()),
+        status: sub?.status,
+      });
+    },
+    error: (e) => console.error(e),
+  });
+}
 
   closeViewModal() {
     this.showDetailsModal.set(false);
