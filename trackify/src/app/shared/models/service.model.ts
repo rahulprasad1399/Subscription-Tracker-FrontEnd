@@ -5,6 +5,7 @@ export interface Service {
   serviceName: string;
   categoryId: number;
   categoryName: string;
+  createdByUserId : number
 }
 
 export interface RegisterForm {

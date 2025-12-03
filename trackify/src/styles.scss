@@ -8,7 +8,7 @@
   --color-app: var(--bg-app);
   --color-card: var(--bg-card);
   --color-input: var(--bg-input);
-  
+
   --color-main: var(--text-main);
   --color-muted: var(--text-muted);
 
@@ -21,11 +21,11 @@
 
 :root {
   /* --- Light Theme Defaults --- */
-  --primary: #2DD4BF; /* Indigo */
+  --primary: #2dd4bf; /* Indigo */
   --secondary: #ff4081; /* Pink accent */
-  
-  --bg-app: #f5f5f5;   /* Light Grey Background */
-  --bg-card: #ffffff;  /* White Card */
+
+  --bg-app: #f5f5f5; /* Light Grey Background */
+  --bg-card: #ffffff; /* White Card */
   --bg-input: #ebeaea; /* White Input Background */
 
   --text-main: #333333; /* Dark Grey Text */
@@ -39,12 +39,12 @@
 
 /* --- Dark Theme Overrides --- */
 [data-theme="dark"] {
-  --primary: #2DD4BF;
+  --primary: #2dd4bf;
   --secondary: #ff80ab;
 
   --bg-app: #121212;
   --bg-card: #1e1e1e;
-    --bg-input: #040303; /* White Input Background */
+  --bg-input: #040303; /* White Input Background */
 
   --text-main: #e0e0e0;
   --text-muted: #a0a0a0;
@@ -71,13 +71,24 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.success-snackbar {
-  background-color: #4caf50 !important;
-  color: white !important;
-}
+/* Must be in the global styles file (e.g., src/styles.scss) */
+.mat-mdc-snack-bar-container {
+  /* ... your existing error-snackbar styles ... */
+  &.error-snackbar {
+    --mdc-snackbar-container-color: #e62222; /* Red */
+    --mdc-snackbar-supporting-text-color: white;
+    --mat-mdc-snack-bar-button-color: #ffcdd2;
+  }
 
-.error-snackbar {
-  background-color: #f44336 !important;
-  color: white !important;
-}
+  /* --- SUCCESS SNACKBAR (TEAL 400) --- */
+  &.success-snackbar {
+    /* Background color (Teal 400) */
+    --mdc-snackbar-container-color: #4acbbe;
 
+    /* Text color */
+    --mdc-snackbar-supporting-text-color: white;
+
+    /* Action button color (light teal/white) */
+    --mat-mdc-snack-bar-button-color: white; /* Teal 50 */
+  }
+}

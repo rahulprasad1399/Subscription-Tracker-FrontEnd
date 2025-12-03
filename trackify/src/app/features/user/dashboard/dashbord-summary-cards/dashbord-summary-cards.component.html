@@ -104,7 +104,7 @@
             Average Cost Per Sub
           </div>
           <div class="text-3xl font-bold text-orange-400 mt-3 tracking-tight">
-            {{ cardData?.averageCostPerSub ?? 0 }}
+            {{ (cardData?.averageCostPerSub ?? 0) | number:'1.2-2' }}
           </div>
           <div class="text-xs text-muted mt-1 font-medium">Due within the week</div>
         </div>

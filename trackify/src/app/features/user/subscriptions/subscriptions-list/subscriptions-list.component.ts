@@ -24,6 +24,7 @@ import {
 } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-subscriptions-list',
@@ -47,6 +48,7 @@ export class SubscriptionsListComponent {
   private subscriptionTypeService = inject(SubscriptionTypeService);
   private router = inject(Router);
   private searchSubject = new Subject<string>();
+  snack = inject(MatSnackBar);
 
   isLoading = signal<boolean>(false);
 
@@ -150,25 +152,24 @@ export class SubscriptionsListComponent {
         parseInt(parts[1]) - 1,
         parseInt(parts[2])
       );
-            console.log(date);
-
+      console.log(date);
 
       switch (periodUnit) {
         case BillingPeriodUnit.Day:
           date.setDate(date.getDate() + frequency);
           console.log(date);
           break;
-          case BillingPeriodUnit.Week:
-            date.setDate(date.getDate() + frequency * 7);
-            console.log(date);
-            break;
-            case BillingPeriodUnit.Month:
-              date.setMonth(date.getMonth() + frequency);
-              console.log(date);
-              break;
-              case BillingPeriodUnit.Year:
-                date.setFullYear(date.getFullYear() + frequency);
-                console.log(date);
+        case BillingPeriodUnit.Week:
+          date.setDate(date.getDate() + frequency * 7);
+          console.log(date);
+          break;
+        case BillingPeriodUnit.Month:
+          date.setMonth(date.getMonth() + frequency);
+          console.log(date);
+          break;
+        case BillingPeriodUnit.Year:
+          date.setFullYear(date.getFullYear() + frequency);
+          console.log(date);
           break;
       }
 
@@ -178,7 +179,6 @@ export class SubscriptionsListComponent {
       const formattedDate = `${year}-${month}-${day}`;
       console.log(formattedDate);
       this.addSubscriptionForm.patchValue({ renewalDate: formattedDate });
-      
     }
   }
 
@@ -221,14 +221,33 @@ export class SubscriptionsListComponent {
   saveSubscription() {
     if (this.addSubscriptionForm.invalid) {
       this.addSubscriptionForm.markAllAsTouched();
+      this.snack.open('Please enter all the required fields', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
       return;
     }
     const formData = this.addSubscriptionForm.getRawValue();
     console.log('Final Form Data:', formData);
     this.subscriptionService.createSubscription(formData).subscribe({
       next: (data) => {
-        console.log('Subscription created:', data);
+        this.snack.open('Subscription added successfully', 'Ok', {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+        });
         this.loadSubscriptions();
+      },
+      error: (err) => {
+        console.log(err);
+
+        this.snack.open(
+          err?.error?.errors[0]?.message || 'Something went wrong',
+          'Close',
+          {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          }
+        );
       },
     });
 
@@ -248,6 +267,20 @@ export class SubscriptionsListComponent {
           console.log('Subscription created:', data);
           this.closeEditModal();
           this.loadSubscriptions();
+          this.snack.open('Subscription updated successfully', 'Ok', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          });
+        },
+        error: (err) => {
+          this.snack.open(
+            err?.error?.errors[0]?.message || 'Something went wrong',
+            'Close',
+            {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            }
+          );
         },
       });
     }
@@ -320,8 +353,17 @@ export class SubscriptionsListComponent {
           console.log(`Deleted ${sub.serviceName}`);
           this.loadSubscriptions();
           this.closeDeleteModal();
+          this.snack.open('Subscription Deleted successfully', 'Ok', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          });
         },
-        error: (err) => console.error('Delete failed', err),
+        error: (err) => {
+          this.snack.open('Something went wrong', 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          });
+        },
       });
     }
   }
@@ -343,42 +385,42 @@ export class SubscriptionsListComponent {
   }
 
   loadSubscriptionFullDetails(id: number) {
-  this.subscriptionService.getSubscriptionById(id).subscribe({
-    next: (data) => {
-      this.selectedSubscription.set(data);
-      const sub = this.selectedSubscription();
-      
-      // Helper function to format date without timezone issues
-      const formatDateForInput = (dateString: string | undefined) => {
-        if (!dateString) return '';
-        
-        // If the date is already in YYYY-MM-DD format, use it directly
-        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-          return dateString;
-        }
-        
-        // Otherwise, parse and format carefully
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-      
-      this.addSubscriptionForm.patchValue({
-        serviceId: sub?.serviceId,
-        subscriptionTypeId: sub?.subscriptionTypeId,
-        cost: sub?.cost,
-        billingFrequency: sub?.billingFrequency,
-        billingPeriodUnit: sub?.billingPeriodUnit,
-        purchaseDate: formatDateForInput(sub?.purchaseDate.toString()),
-        renewalDate: formatDateForInput(sub?.renewalDate.toString()),
-        status: sub?.status,
-      });
-    },
-    error: (e) => console.error(e),
-  });
-}
+    this.subscriptionService.getSubscriptionById(id).subscribe({
+      next: (data) => {
+        this.selectedSubscription.set(data);
+        const sub = this.selectedSubscription();
+
+        // Helper function to format date without timezone issues
+        const formatDateForInput = (dateString: string | undefined) => {
+          if (!dateString) return '';
+
+          // If the date is already in YYYY-MM-DD format, use it directly
+          if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return dateString;
+          }
+
+          // Otherwise, parse and format carefully
+          const date = new Date(dateString);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+
+        this.addSubscriptionForm.patchValue({
+          serviceId: sub?.serviceId,
+          subscriptionTypeId: sub?.subscriptionTypeId,
+          cost: sub?.cost,
+          billingFrequency: sub?.billingFrequency,
+          billingPeriodUnit: sub?.billingPeriodUnit,
+          purchaseDate: formatDateForInput(sub?.purchaseDate.toString()),
+          renewalDate: formatDateForInput(sub?.renewalDate.toString()),
+          status: sub?.status,
+        });
+      },
+      error: (e) => console.error(e),
+    });
+  }
 
   closeViewModal() {
     this.showDetailsModal.set(false);
@@ -391,18 +433,18 @@ export class SubscriptionsListComponent {
   }
 
   toggleDropdownWithDelay(state: boolean) {
-  if (!state) {
-    setTimeout(() => this.isDropdownOpen.set(false), 200);
-  } else {
-    this.isDropdownOpen.set(true);
+    if (!state) {
+      setTimeout(() => this.isDropdownOpen.set(false), 200);
+    } else {
+      this.isDropdownOpen.set(true);
+    }
   }
-}
 
-toggleSubscriptionTypeDropdownWithDelay(state: boolean) {
-  if (!state) {
-    setTimeout(() => this.isSubscriptionTypeDropdownOpen.set(false), 200);
-  } else {
-    this.isSubscriptionTypeDropdownOpen.set(true);
+  toggleSubscriptionTypeDropdownWithDelay(state: boolean) {
+    if (!state) {
+      setTimeout(() => this.isSubscriptionTypeDropdownOpen.set(false), 200);
+    } else {
+      this.isSubscriptionTypeDropdownOpen.set(true);
+    }
   }
-}
 }

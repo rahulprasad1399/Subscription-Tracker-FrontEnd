@@ -1,10 +1,11 @@
 import { Component, Input, signal } from '@angular/core';
 import { SummaryCardData } from '../models/dashbord-models';
 import { CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashbord-summary-cards',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe,CommonModule],
   templateUrl: './dashbord-summary-cards.component.html',
   styleUrl: './dashbord-summary-cards.component.scss',
 })

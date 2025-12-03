@@ -55,11 +55,23 @@ export class LoginComponent {
         next: (res) =>
           this.snack.open('Registration successful!', 'Ok', {
             duration: 3000,
+            panelClass: ['success-snackbar'],
           }),
-        error: (err) =>
-          this.snack.open('Something went wrong!', 'Close', {
-            duration: 3000,
-          }),
+        error: (err) => {
+          this.snack.open(
+            err?.error?.errors[0]?.message || 'Something went wrong',
+            'Close',
+            {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            }
+          );
+        },
+      });
+    } else {
+      this.snack.open('Please enter all the details', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
       });
     }
   }
@@ -72,14 +84,20 @@ export class LoginComponent {
           this.userSignup.user.set(res);
           this.snack.open('Login successful!', 'Ok', {
             duration: 3000,
+            panelClass: ['success-snackbar'],
           });
           console.log(res);
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          this.snack.open('Something went wrong!', 'Close', {
-            duration: 3000,
-          });
+          this.snack.open(
+            err?.error?.details || 'Something went wrong',
+            'Close',
+            {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            }
+          );
           console.log(err);
         },
       });
