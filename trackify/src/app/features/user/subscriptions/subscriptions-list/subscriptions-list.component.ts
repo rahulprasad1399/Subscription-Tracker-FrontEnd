@@ -14,7 +14,7 @@ import { Service } from '../../../../shared/models/service.model';
 import { ServiceService } from '../../../../shared/services/service.service';
 import { SubscriptionType } from '../../../../shared/models/subscription-type.model';
 import { SubscriptionTypeService } from '../../../../shared/services/subscription-type.service';
-import { forkJoin, merge } from 'rxjs';
+import { debounceTime, forkJoin, merge, Subject } from 'rxjs';
 import {
   FormControl,
   FormGroup,
@@ -46,6 +46,7 @@ export class SubscriptionsListComponent {
   private serviceService = inject(ServiceService);
   private subscriptionTypeService = inject(SubscriptionTypeService);
   private router = inject(Router);
+  private searchSubject = new Subject<string>();
 
   isLoading = signal<boolean>(false);
 
@@ -84,6 +85,12 @@ export class SubscriptionsListComponent {
 
   subscriptionToDelete = signal<AllSubscription | null>(null);
 
+  constructor() {
+    this.searchSubject.pipe(debounceTime(400)).subscribe((value) => {
+      this.loadSubscriptions(value);
+    });
+  }
+
   addSubscriptionForm = new FormGroup({
     serviceId: new FormControl<number | null>(null, [
       Validators.required,
@@ -112,6 +119,8 @@ export class SubscriptionsListComponent {
   });
 
   ngOnInit() {
+    this.isLoading.set(true);
+
     this.loadSubscriptions();
     this.setupAutoCalculation();
   }
@@ -163,6 +172,10 @@ export class SubscriptionsListComponent {
 
       this.addSubscriptionForm.patchValue({ renewalDate: formattedDate });
     }
+  }
+
+  onSearchChange() {
+    this.searchSubject.next(this.searchText);
   }
 
   addSubscription() {
@@ -266,20 +279,19 @@ export class SubscriptionsListComponent {
     this.isSubscriptionTypeDropdownOpen.set(false);
   }
 
-  loadSubscriptions() {
-    this.isLoading.set(true);
-    setTimeout(() => {
-      this.subscriptionService.getSubscriptions().subscribe({
-        next: (data) => {
-          this.subscriptions.set(data);
+  loadSubscriptions(searchQuery?: string) {
+    this.subscriptionService.getSubscriptions(searchQuery).subscribe({
+      next: (data) => {
+        this.subscriptions.set(data);
+        setTimeout(() => {
           this.isLoading.set(false);
-        },
-        error: (e) => {
-          console.error(e);
-          this.isLoading.set(false);
-        },
-      });
-    }, 500);
+        }, 500);
+      },
+      error: (e) => {
+        console.error(e);
+        this.isLoading.set(false);
+      },
+    });
   }
 
   onDelete(subscription: AllSubscription) {
@@ -355,6 +367,4 @@ export class SubscriptionsListComponent {
     this.editSubscriptionModal.set(false);
     this.addSubscriptionForm.reset(); // Clear form on close
   }
-
-  onSearchChange() {}
 }

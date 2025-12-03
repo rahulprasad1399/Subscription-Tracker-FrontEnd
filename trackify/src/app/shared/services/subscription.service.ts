@@ -12,8 +12,8 @@ export class SubscriptionService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/subscription`;
 
-  getSubscriptions(): Observable<GetAllSubscriptionsResponse> {
-    return this.http.get<GetAllSubscriptionsResponse>(this.apiUrl, {withCredentials : true});
+  getSubscriptions(searchQuery? : string): Observable<GetAllSubscriptionsResponse> {
+    return this.http.get<GetAllSubscriptionsResponse>(`${this.apiUrl}?searchQuery=${searchQuery || ''}`, {withCredentials : true});
   }
   getSubscriptionById(id: number): Observable<Subscription> {
     return this.http.get<Subscription>(`${this.apiUrl}/${id}`,{
