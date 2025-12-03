@@ -14,6 +14,7 @@ import {
 } from '@angular/forms';
 import { CategoryService } from '../../../../shared/services/category.service';
 import { Category } from '../../../../shared/models/category.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-services-list',
@@ -24,19 +25,12 @@ import { Category } from '../../../../shared/models/category.model';
 export class ServicesListComponent {
   services = signal<Service[]>([]);
   isModalOpen = signal<boolean>(false);
-  categoryService = inject(CategoryService);
   category = signal<Category[]>([]);
-
   isLoading = signal<boolean>(false);
-
   isdeleteModalOpen = signal<boolean>(false);
-
   isEdit = signal<boolean>(false);
   selectedService = signal<Service | null>(null);
-
   serviceToDelete = signal<Service | null>(null);
-
-  private serviceService = inject(ServiceService);
 
   serviceForm = new FormGroup<CreateServiceForm>({
     serviceName: new FormControl<string>('', {
@@ -45,42 +39,22 @@ export class ServicesListComponent {
     }),
     categoryId: new FormControl<number>(0, {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.min(1)],
     }),
   });
 
+  private serviceService = inject(ServiceService);
+  private categoryService = inject(CategoryService);
+  private snack = inject(MatSnackBar);
+
   ngOnInit() {
-    this.loadServices();
-  }
-
-  loadServices() {
     this.isLoading.set(true);
-
-    setTimeout(() => {
-      this.serviceService.getServices().subscribe({
-        next: (data) => {
-          this.services.set(data);
-          this.isLoading.set(false);
-        },
-        error: (error) => {
-          this.isLoading.set(false);
-          console.error('Error fetching services:', error);
-        },
-        complete: () => console.log('Finished fetching services.'),
-      });
-    }, 500);
+    this.loadServices();
   }
 
   addSubscription() {
     this.isModalOpen.set(true);
     this.getAllCategory();
-  }
-
-  getAllCategory() {
-    this.categoryService.getAllCategory().subscribe({
-      next: (res) => this.category.set(res),
-      error: (err) => console.log(err),
-    });
   }
 
   closeModal() {
@@ -91,6 +65,10 @@ export class ServicesListComponent {
   }
 
   saveService() {
+    if (!this.serviceForm.valid) {
+      console.log('I work here');
+      return;
+    }
     if (this.isEdit() && this.selectedService()) {
       this.serviceService
         .updateService(
@@ -104,19 +82,47 @@ export class ServicesListComponent {
             this.isEdit.set(false);
             this.selectedService.set(null);
             this.serviceForm.reset();
+            this.snack.open('Service Updated successfully', 'Ok', {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            });
           },
-          error: (err) => console.log(err),
+          error: (err) => {
+            this.snack.open(
+              err?.error?.errors[0]?.message || 'Something went wrong',
+              'Close',
+              {
+                duration: 3000,
+                panelClass: ['error-snackbar'],
+              }
+            );
+            this.isModalOpen.set(false);
+          },
         });
     } else {
       this.serviceService
         .createService(this.serviceForm.getRawValue())
         .subscribe({
           next: () => {
+            this.snack.open('Service Created successfully', 'Ok', {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            });
             this.loadServices();
             this.closeModal();
             this.serviceForm.reset();
           },
-          error: (err) => console.log(err),
+          error: (err) => {
+            this.snack.open(
+              err?.error?.errors[0]?.message || 'Something went wrong',
+              'Close',
+              {
+                duration: 3000,
+                panelClass: ['error-snackbar'],
+              }
+            );
+            this.isModalOpen.set(false);
+          },
         });
     }
   }
@@ -151,9 +157,42 @@ export class ServicesListComponent {
           this.loadServices();
           this.closeDeleteModal();
           this.serviceToDelete.set(null);
+          this.snack.open('Service Deleted successfully', 'Ok', {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          });
         },
-        error: (err) => console.log(err),
+        error: (err) => {
+          console.log(err);
+          this.snack.open('Something went wrong', 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          });
+        },
       });
     }
+  }
+
+  private loadServices() {
+    this.serviceService.getServices().subscribe({
+      next: (data) => {
+        this.services.set(data);
+        setTimeout(() => {
+          this.isLoading.set(false);
+        }, 500);
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Error fetching services:', error);
+      },
+      complete: () => console.log('Finished fetching services.'),
+    });
+  }
+
+  private getAllCategory() {
+    this.categoryService.getAllCategory().subscribe({
+      next: (res) => this.category.set(res),
+      error: (err) => console.log(err),
+    });
   }
 }

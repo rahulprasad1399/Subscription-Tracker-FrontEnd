@@ -4,6 +4,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { UsersignupService } from '../shared/services/userAuth.service';
 import { AuthUser } from '../shared/models/service.model';
+import { environment } from '../environment';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const http = inject(HttpClient);
@@ -11,7 +12,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(UsersignupService);
 
   return http
-    .get<AuthUser>('https://localhost:7027/api/User/validate', {
+    .get<AuthUser>(`${environment.apiUrl}/User/validate`, {
       withCredentials: true,
     })
     .pipe(

@@ -5,13 +5,17 @@ import { SubscriptionsListComponent } from './subscriptions/subscriptions-list/s
 import { SubscriptionLayoutComponent } from './subscriptions/subscription-layout/subscription-layout.component';
 import { NotificationLayoutComponent } from './notifications/notification-layout/notification-layout.component';
 import { ServicesLayoutComponent } from './services/services-layout/services-layout.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 export const userRoutes: Routes = [
   {
     path: '',
     component: UserLayoutComponent,
     children: [
-      
+      {
+        path : 'user-profile',
+        component : UserProfileComponent
+      },
       {
         path: 'subscriptions',
         component: SubscriptionLayoutComponent,
