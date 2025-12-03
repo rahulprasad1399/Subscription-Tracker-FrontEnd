@@ -20,38 +20,48 @@ export interface LoginForm {
 }
 
 export interface RegisterUser {
-  email : string,
-  password : string,
-  fullName : string 
+  email: string;
+  password: string;
+  fullName: string;
 }
 
 export interface RegisterResponse {
-  id : number,
-  message : string
+  id: number;
+  message: string;
 }
 
 export interface LoginUser {
-  email : string,
-  password : string 
+  email: string;
+  password: string;
 }
 
 export interface LoginResponse {
-  email : string,
-  fullName : string
+  email: string;
+  fullName: string;
 }
 
 export interface CreateService {
-  serviceName : string,
-  categoryId : number
+  serviceName: string;
+  categoryId: number;
 }
 
-export interface CreateServiceForm{
-  serviceName : FormControl<string>,
-  categoryId : FormControl<number>
+export interface CreateServiceForm {
+  serviceName: FormControl<string>;
+  categoryId: FormControl<number>;
 }
 
 export interface AuthUser {
   fullName: string;
   id: number;
+  email: string;
+}
+
+export interface UserData {
+  email: string;
+  fullName: string;
+}
+
+export interface OtpData {
+  otp: string;
   email: string;
 }
