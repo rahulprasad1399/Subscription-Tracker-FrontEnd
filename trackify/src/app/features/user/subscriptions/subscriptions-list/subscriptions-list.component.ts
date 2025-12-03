@@ -260,7 +260,7 @@ export class SubscriptionsListComponent {
   });
 
   toggleDropdown(state: boolean) {
-    setTimeout(() => this.isDropdownOpen.set(state), 200);
+    this.isDropdownOpen.set(state);
   }
 
   selectService(service: Service) {
@@ -270,7 +270,7 @@ export class SubscriptionsListComponent {
   }
 
   toggleSubscriptionTypeDropdown(state: boolean) {
-    setTimeout(() => this.isSubscriptionTypeDropdownOpen.set(state), 200);
+    this.isSubscriptionTypeDropdownOpen.set(state);
   }
 
   selectSubscriptionType(type: SubscriptionType) {
@@ -367,4 +367,20 @@ export class SubscriptionsListComponent {
     this.editSubscriptionModal.set(false);
     this.addSubscriptionForm.reset(); // Clear form on close
   }
+
+  toggleDropdownWithDelay(state: boolean) {
+  if (!state) {
+    setTimeout(() => this.isDropdownOpen.set(false), 200);
+  } else {
+    this.isDropdownOpen.set(true);
+  }
+}
+
+toggleSubscriptionTypeDropdownWithDelay(state: boolean) {
+  if (!state) {
+    setTimeout(() => this.isSubscriptionTypeDropdownOpen.set(false), 200);
+  } else {
+    this.isSubscriptionTypeDropdownOpen.set(true);
+  }
+}
 }

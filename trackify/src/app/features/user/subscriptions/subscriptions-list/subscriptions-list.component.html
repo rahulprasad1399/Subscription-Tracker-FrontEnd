@@ -421,7 +421,7 @@
               @if(filteredServices().length>0){ @for (service of
               filteredServices(); track service.id) {
               <li
-                (click)="selectService(service)"
+  (mousedown)="selectService(service); $event.preventDefault()"
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
                 <img
@@ -468,7 +468,7 @@
               @if(filteredSubscriptionType().length>0){ @for (type of
               filteredSubscriptionType(); track type.id) {
               <li
-                (click)="selectSubscriptionType(type)"
+                (mousedown)="selectSubscriptionType(type); $event.preventDefault()"
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
                 <span class="text-sm text-gray-300 group-hover:text-white">{{
