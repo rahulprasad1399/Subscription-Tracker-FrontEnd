@@ -43,11 +43,11 @@ export class UserLayoutComponent {
       icon: 'miscellaneous_services',
       route: '/services',
     },
-    {
-      label: 'Subscription Types',
-      icon: 'category',
-      route: '/subscription-types',
-    },
+    // {
+    //   label: 'Subscription Types',
+    //   icon: 'category',
+    //   route: '/subscription-types',
+    // },
     {
       label: 'Notifications',
       icon: 'notifications',

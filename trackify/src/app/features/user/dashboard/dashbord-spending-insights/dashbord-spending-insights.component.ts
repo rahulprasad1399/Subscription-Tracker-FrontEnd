@@ -21,6 +21,7 @@ import {
   ApexNonAxisChartSeries,
   ApexResponsive,
   ApexLegend,
+  ApexTooltip,
 } from 'ng-apexcharts';
 import {
   CategoriesSummary,
@@ -37,6 +38,7 @@ export type ChartOptionsMonthlySpend = {
   grid: ApexGrid;
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
+  tooltip: ApexTooltip;
 };
 
 export type ChartOptionsBarChart = {
@@ -68,9 +70,9 @@ export class DashbordSpendingInsightsComponent {
   public chartOptionsBarChart!: Required<ChartOptionsBarChart>;
   public chartOptionsPrieChart!: Required<ChartOptionsPieChart>;
 
-  isLoading  = signal<Boolean>(true)
+  isLoading = signal<Boolean>(true);
   @Input() insightsData!: InsightsData | null;
-  
+
   monthlySpend = signal<MonthlySpends | null>(null);
   activeStatus = signal<ActiveStatus | null>(null);
   categoriesSummary = signal<CategoriesSummary | null>(null);
@@ -121,22 +123,33 @@ export class DashbordSpendingInsightsComponent {
     this.chartOptionsMonthlySpend = {
       series: [
         {
-          name: 'Desktop',
+          name: 'Spending',
           data: [],
+          color: '#64748b',
         },
       ],
+      tooltip: {                       
+    enabled: true,
+    theme: 'dark',                      
+    color:"#64748b",
+    foreColor: '#64748b',    
+  } as any,
       chart: {
         height: 380,
         type: 'area',
         background: 'transparent',
-        foreColor: '#cbd5e1',
+        foreColor: '#64748b',
+
         zoom: {
           enabled: false,
         },
-        toolbar: { show: false }
+        toolbar: { show: false },
       },
       dataLabels: {
         enabled: false,
+        style: {
+          colors: ['#ffffff'],
+        },
       },
       stroke: {
         curve: 'straight',
@@ -145,10 +158,10 @@ export class DashbordSpendingInsightsComponent {
         text: 'Monthly Spend',
         align: 'left',
       },
-      
+
       grid: {
         row: {
-          colors: [ 'transparent'],
+          colors: ['transparent'],
           opacity: 0.5,
         },
       },
@@ -183,6 +196,7 @@ export class DashbordSpendingInsightsComponent {
         background: 'transparent',
         foreColor: '#cbd5e1',
       },
+
       plotOptions: {
         bar: {
           horizontal: false,
@@ -224,7 +238,7 @@ export class DashbordSpendingInsightsComponent {
       legend: {
         position: 'bottom',
         fontSize: '14px',
-        itemMargin: { horizontal: 10, vertical: 5 }
+        itemMargin: { horizontal: 10, vertical: 5 },
       },
     };
   }
