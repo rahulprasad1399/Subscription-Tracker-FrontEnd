@@ -80,10 +80,18 @@ export class LoginComponent {
         );
         this.showOtpModal.set(true);
       },
-      error: (err) =>
-        this.snack.open('Something went wrong!', 'Close', {
-          duration: 3000,
-        }),
+      error: (err) =>{
+
+        this.snack.open(
+          err?.error?.errors[0]?.message || 'Something went wrong',
+          'Close',
+          {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          }
+        )
+        
+      }
     });
   }
 
