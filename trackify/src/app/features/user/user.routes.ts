@@ -6,6 +6,7 @@ import { SubscriptionLayoutComponent } from './subscriptions/subscription-layout
 import { NotificationLayoutComponent } from './notifications/notification-layout/notification-layout.component';
 import { ServicesLayoutComponent } from './services/services-layout/services-layout.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ChatBotComponent } from './chat-bot/chat-bot.component';
 
 export const userRoutes: Routes = [
   {
@@ -15,6 +16,10 @@ export const userRoutes: Routes = [
       {
         path : 'user-profile',
         component : UserProfileComponent
+      },
+      {
+        path : 'chat-bot',
+        component : ChatBotComponent
       },
       {
         path: 'subscriptions',

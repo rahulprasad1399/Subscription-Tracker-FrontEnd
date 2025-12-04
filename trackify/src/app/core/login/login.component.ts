@@ -195,8 +195,10 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
+          console.log("error on login :", err);
+          
           this.snack.open(
-            err?.error?.details || 'Something went wrong',
+            err?.error?.errors[0]?.message || 'Something went wrong',
             'Close',
             {
               duration: 3000,
