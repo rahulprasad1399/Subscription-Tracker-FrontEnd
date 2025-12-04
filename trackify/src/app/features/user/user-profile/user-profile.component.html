@@ -1,89 +1,156 @@
-<div class="w-full max-w-5xl mx-auto px-4 py-8 relative">
-  <div>
-    <header>
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h2 class="text-huge font-bold tracking-tight text-teal-400">
-            Profile
-          </h2>
-          <p class="text-muted mt-1 text-sm">
-            Update your personal information
-          </p>
-        </div>
-      </div>
+<div
+  class="w-full bg-app text-main font-sans transition-colors duration-300 relative"
+>
+  <div class="max-w-3xl mx-auto px-4">
+    <header class="mb-8 text-center sm:text-left">
+      <h2 class="text-huge font-bold tracking-tight text-primary">
+        Profile Settings
+      </h2>
+      <p class="text-muted mt-2 text-base font-medium">
+        Manage your personal information and account preferences
+      </p>
     </header>
 
-    <!-- Profile Card -->
-    <div class="bg-card border border-border rounded-xl p-6">
-      <form class="flex flex-col gap-6">
-        <!-- Profile Image Section -->
-        <div class="flex items-center gap-6">
-          <div
-            class="w-24 h-24 rounded-full overflow-hidden border border-border"
-          >
-            <img
-              [src]="
-                profilePhotoUrl ||
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHviSXg4IoEnfXdnG0XRI1FrVUhc2zdo3JLVujaQkBcE9V7k5Z5IHwlE-CJixt4GbVWaAAnackYlSF4HW79NMsPQO7JmbL1aA4BWQCZuV_jQ&s=10'
-              "
-              alt="Profile Photo"
-              class="w-full h-full object-cover"
-            />
-          </div>
+    <div
+      class="bg-card rounded-2xl shadow-xl border border-muted/10 overflow-hidden relative"
+    >
+      <div class="h-32 bg-primary/20 w-full relative overflow-hidden">
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-card to-transparent"
+        ></div>
+      </div>
 
-          <div>
-            <label class="block">
+      <div class="px-8 pb-8">
+        <form class="flex flex-col gap-8">
+          <div
+            class="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 relative z-10"
+          >
+            <div class="group relative">
+              <div
+                class="w-32 h-32 rounded-full overflow-hidden border-4 border-card bg-input shadow-lg"
+              >
+                <img
+                  [src]="
+                    profilePhotoUrl ||
+                    'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
+                  "
+                  alt="Profile Photo"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
+
               <button
                 type="button"
-                class="px-4 py-2 bg-teal-400 text-white rounded-lg hover:bg-teal-500 transition-all"
                 (click)="fileInput.click()"
+                class="absolute bottom-1 right-1 p-2 bg-primary text-white rounded-full shadow-md hover:bg-secondary transition-all transform hover:scale-110 border-2 border-card"
+                title="Change Photo"
               >
-                Change Photo
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                  ></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
               </button>
-            </label>
+            </div>
 
-            <input
-              hidden
-              #fileInput
-              type="file"
-              (change)="onPhotoSelected($event)"
-            />
+            <div class="flex flex-col items-center sm:items-start mb-2">
+              <span
+                class="text-tiny font-bold uppercase tracking-wider text-muted mb-1"
+                >Avatar</span
+              >
+              <div class="flex gap-3">
+                <span class="text-main font-semibold text-lg">{{
+                  fullName || "User"
+                }}</span>
+              </div>
+              <div class="flex gap-3">
+                <span class="text-main text-sm">{{ email || "User" }}</span>
+              </div>
+              <input
+                hidden
+                #fileInput
+                type="file"
+                (change)="onPhotoSelected($event)"
+              />
+            </div>
           </div>
-        </div>
+          @if(isEditing()){
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-muted ml-1"
+                >Full Name</label
+              >
+              <div class="relative group">
+                <input
+                  type="text"
+                  [(ngModel)]="fullNameEdit"
+                  name="fullName"
+                  placeholder="e.g. John Doe"
+                  class="w-full px-4 py-3 bg-input border border-muted/20 rounded-xl text-main placeholder-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
+                />
+              </div>
+            </div>
 
-        <!-- Full Name -->
-        <div>
-          <label class="text-sm text-muted">Full Name</label>
-          <input
-            type="text"
-            [(ngModel)]="fullName"
-            name="fullName"
-            class="mt-1 w-full px-4 py-2 bg-background border border-border rounded-lg text-main focus:outline-none focus:ring-2 focus:ring-teal-400/40"
-          />
-        </div>
+            <div class="space-y-2">
+              <label class="text-sm font-semibold text-muted ml-1"
+                >Email Address</label
+              >
+              <div class="relative group">
+                <input
+                  type="email"
+                  [(ngModel)]="emailEdit"
+                  name="email"
+                  placeholder="john@example.com"
+                  class="w-full px-4 py-3 bg-input border border-muted/20 rounded-xl text-main placeholder-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
+                />
+              </div>
+            </div>
+          </div>
+          } @if(isEditing()){
 
-        <!-- Email -->
-        <div>
-          <label class="text-sm text-muted">Email</label>
-          <input
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            class="mt-1 w-full px-4 py-2 bg-background border border-border rounded-lg text-main focus:outline-none focus:ring-2 focus:ring-teal-400/40"
-          />
-        </div>
+          <div class="h-px w-full bg-muted/10"></div>
+          }
 
-        <!-- Save Button -->
-        <div class="flex justify-end mt-4">
-          <button
-            type="button"
-            (click)="saveChanges()"
-            class="px-6 py-2 bg-teal-400 text-white rounded-lg hover:bg-teal-500 transition-all"
-          >
-            Save Changes
-          </button>
-        </div>
-      </form>
+          <div class="flex justify-end gap-4">
+            @if(isEditing()){
+            <button
+              type="button"
+              (click)="isEditing.set(false)"
+              class="px-8 py-3 text-primary font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              (click)="saveChanges()"
+              class="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            >
+              Save Changes
+            </button>
+            }@else {
+            <button
+              type="button"
+              (click)="isEditing.set(true)"
+              class="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            >
+              Edit Profile
+            </button>
+            }
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+

@@ -194,7 +194,8 @@ export class DashbordSpendingInsightsComponent {
         type: 'bar',
         height: 160,
         background: 'transparent',
-        foreColor: '#cbd5e1',
+        foreColor: '#94a3b8',
+        toolbar: { show: false },
       },
 
       plotOptions: {
@@ -219,7 +220,7 @@ export class DashbordSpendingInsightsComponent {
       chart: {
         type: 'donut',
         background: 'transparent',
-        foreColor: '#cbd5e1',
+        foreColor: '#94a3b8',
       },
       labels: [],
       responsive: [

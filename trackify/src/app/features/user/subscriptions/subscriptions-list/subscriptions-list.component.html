@@ -47,16 +47,16 @@
 
     <div class="divide-y divide-muted/10">
       @for (i of [1, 2, 3, 4, 5]; track i) {
-        <div class="py-4 px-6 flex items-center gap-4">
-          <div class="w-8 h-8 rounded-full bg-muted/20"></div>
-          <div class="flex-1">
-            <div class="h-3 w-40 bg-muted/20 rounded"></div>
-          </div>
-          <div class="h-3 w-24 bg-muted/20 rounded"></div>
-          <div class="h-3 w-20 bg-muted/20 rounded"></div>
-          <div class="h-3 w-24 bg-muted/20 rounded"></div>
-          <div class="h-3 w-16 bg-muted/20 rounded"></div>
+      <div class="py-4 px-6 flex items-center gap-4">
+        <div class="w-8 h-8 rounded-full bg-muted/20"></div>
+        <div class="flex-1">
+          <div class="h-3 w-40 bg-muted/20 rounded"></div>
         </div>
+        <div class="h-3 w-24 bg-muted/20 rounded"></div>
+        <div class="h-3 w-20 bg-muted/20 rounded"></div>
+        <div class="h-3 w-24 bg-muted/20 rounded"></div>
+        <div class="h-3 w-16 bg-muted/20 rounded"></div>
+      </div>
       }
     </div>
   </div>
@@ -375,7 +375,7 @@
   ></div>
 
   <div
-    class="relative w-full max-w-lg bg-gray-900 rounded-2xl shadow-2xl border border-white/10 flex flex-col h-auto max-h-[85vh] overflow-hidden"
+    class="relative w-full max-w-lg bg-app rounded-2xl shadow-2xl border border-white/10 flex flex-col h-auto max-h-[85vh] overflow-hidden"
   >
     <div
       class="flex items-center justify-between p-6 border-b border-white/5 shrink-0"
@@ -385,7 +385,7 @@
       </h3>
       <button
         (click)="closeModal()"
-        class="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+        class="text-main hover:text-muted transition-colors p-1 rounded-full hover:bg-white/10"
       >
         <mat-icon>close</mat-icon>
       </button>
@@ -415,13 +415,13 @@
           </div>
           @if (isDropdownOpen()) {
           <div
-            class="absolute z-50 w-full mt-1 bg-gray-800 border border-white/10 rounded-xl shadow-xl overflow-hidden"
+            class="absolute z-50 w-full mt-1 bg-app border border-white/10 rounded-xl shadow-xl overflow-hidden"
           >
             <ul class="max-h-45 overflow-y-auto py-1 custom-scrollbar">
               @if(filteredServices().length>0){ @for (service of
               filteredServices(); track service.id) {
               <li
-  (mousedown)="selectService(service); $event.preventDefault()"
+                (mousedown)="selectService(service); $event.preventDefault()"
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
                 <img
@@ -434,7 +434,7 @@
               <li
                 class="flex items-center gap-3 px-4 py-3 transition-colors group"
               >
-                <span class="text-sm text-gray-300"> No type Found </span>
+                <span class="text-sm"> No service Found </span>
               </li>
               }
             </ul>
@@ -461,24 +461,24 @@
           </div>
           @if (isSubscriptionTypeDropdownOpen()) {
           <div
-            class="absolute z-50 w-full mt-1 bg-gray-800 border border-white/10 rounded-xl shadow-xl overflow-hidden"
+            class="absolute z-50 w-full mt-1 bg-app border border-white/10 rounded-xl shadow-xl overflow-hidden"
           >
             <ul class="max-h-45 overflow-y-auto py-1 custom-scrollbar">
               @if(filteredSubscriptionType().length>0){ @for (type of
               filteredSubscriptionType(); track type.id) {
               <li
-                (mousedown)="selectSubscriptionType(type); $event.preventDefault()"
+                (mousedown)="
+                  selectSubscriptionType(type); $event.preventDefault()
+                "
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
-                <span class="text-sm text-gray-300 group-hover:text-white">{{
-                  type.typeName
-                }}</span>
+                <span class="text-sm">{{ type.typeName }}</span>
               </li>
               } } @else {
               <li
                 class="flex items-center gap-3 px-4 py-3 transition-colors group"
               >
-                <span class="text-sm text-gray-300"> No type Found </span>
+                <span class="text-sm"> No type Found </span>
               </li>
               }
             </ul>
@@ -643,7 +643,7 @@
   ></div>
 
   <div
-    class="relative w-full max-w-sm bg-gray-900 rounded-2xl shadow-2xl border border-white/10 overflow-hidden transform transition-all scale-100"
+    class="relative w-full max-w-sm bg-app rounded-2xl shadow-2xl border border-white/10 overflow-hidden transform transition-all scale-100"
   >
     <div class="p-6 text-center">
       <div
@@ -669,26 +669,26 @@
         </svg>
       </div>
 
-      <h3 class="text-xl font-bold text-white mb-2">Delete Subscription?</h3>
-      <p class="text-sm text-gray-400">
+      <h3 class="text-xl font-bold text-main mb-2">Delete Subscription?</h3>
+      <p class="text-sm text-muted">
         Do you really want to delete the
-        <span class="text-white font-medium">{{
+        <span class="text-main font-medium">{{
           subscriptionToDelete()?.serviceName
         }}</span>
         subscription? <br />This action cannot be undone.
       </p>
     </div>
 
-    <div class="grid grid-cols-2 gap-3 p-6 border-t border-white/5 bg-white/5">
+    <div class="grid grid-cols-2 gap-3 p-6 border-t border-white/5 bg-card">
       <button
         (click)="closeDeleteModal()"
-        class="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+        class="px-4 py-2.5 rounded-xl text-sm font-medium text-muted hover:text-main hover:bg-white/5 transition-colors"
       >
         Cancel
       </button>
       <button
         (click)="confirmDelete()"
-        class="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all"
+        class="px-4 py-2.5 rounded-xl text-sm font-bold text-app bg-red-600 hover:bg-red-500 shadow-lg shadow-red-900/20 transition-all"
       >
         Delete
       </button>
@@ -803,17 +803,17 @@
   ></div>
 
   <div
-    class="relative w-full max-w-lg bg-gray-900 rounded-2xl shadow-2xl border border-white/10 flex flex-col h-auto max-h-[85vh] overflow-hidden"
+    class="relative w-full max-w-lg bg-app rounded-2xl shadow-2xl border border-white/10 flex flex-col h-auto max-h-[85vh] overflow-hidden"
   >
     <div
       class="flex items-center justify-between p-6 border-b border-white/5 shrink-0"
     >
-      <h3 class="text-xl font-bold text-white tracking-tight">
+      <h3 class="text-xl font-bold text-main tracking-tight">
         Edit Subscription
       </h3>
       <button
         (click)="closeEditModal()"
-        class="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+        class="text-main hover:text-muted transition-colors p-1 rounded-full hover:bg-white/10"
       >
         <mat-icon>close</mat-icon>
       </button>
@@ -841,26 +841,31 @@
               class="w-full bg-input border border-white/10 rounded-lg px-4 py-3 text-main focus:outline-none focus:border-teal-500/50"
             />
           </div>
-          @if (isDropdownOpen()) {
+          @if (isDropdownOpen()) { 
+            
           <div
-            class="absolute z-50 w-full mt-1 bg-gray-800 border border-white/10 rounded-xl shadow-xl overflow-hidden"
+            class="absolute z-50 w-full mt-1 bg-app border border-white/10 rounded-xl shadow-xl overflow-hidden"
           >
+          @if(filteredServices().length>0){
             <ul class="max-h-45 overflow-y-auto py-1 custom-scrollbar">
               @for (service of filteredServices(); track service.id) {
               <li
-                (click)="selectService(service)"
+                (mousedown)="selectService(service); $event.preventDefault()"
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
                 <img
                   [src]="service.id | serviceImage"
                   class="w-6 h-6 rounded-full bg-white"
                 />
-                <span class="text-sm text-gray-300 group-hover:text-white">{{
-                  service.serviceName
-                }}</span>
+                <span class="text-sm">{{ service.serviceName }}</span>
               </li>
               }
             </ul>
+            } @else {
+          <li class="flex items-center gap-3 px-4 py-3 transition-colors group">
+            <span class="text-sm"> No service Found </span>
+          </li>
+          }
           </div>
           }
         </div>
@@ -884,21 +889,29 @@
             />
           </div>
           @if (isSubscriptionTypeDropdownOpen()) {
+
           <div
-            class="absolute z-50 w-full mt-1 bg-gray-800 border border-white/10 rounded-xl shadow-xl overflow-hidden"
+            class="absolute z-50 w-full mt-1 bg-app border border-white/10 rounded-xl shadow-xl overflow-hidden"
           >
+            @if(filteredSubscriptionType().length>0){
             <ul class="max-h-45 overflow-y-auto py-1 custom-scrollbar">
               @for (type of filteredSubscriptionType(); track type.id) {
               <li
-                (click)="selectSubscriptionType(type)"
+                (mousedown)="selectSubscriptionType(type); $event.preventDefault()"
                 class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors group"
               >
-                <span class="text-sm text-gray-300 group-hover:text-white">{{
-                  type.typeName
-                }}</span>
+                <span class="text-sm">{{ type.typeName }}</span>
               </li>
               }
             </ul>
+            }@else {
+            <li
+              class="flex items-center gap-3 px-4 py-3 transition-colors group"
+            >
+              <span class="text-sm"> No type Found </span>
+            </li>
+
+            }
           </div>
           }
         </div>
@@ -1044,7 +1057,7 @@
         <button
           type="submit"
           [disabled]="addSubscriptionForm.invalid"
-          class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-teal-600 hover:bg-teal-500 shadow-lg shadow-teal-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Update Subscription
         </button>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UploadService } from '../../../shared/services/upload.service';
 import { firstValueFrom } from 'rxjs';
@@ -13,17 +13,26 @@ import { UsersignupService } from '../../../shared/services/userAuth.service';
 export class UserProfileComponent implements OnInit {
   fullName: string = '';
   email: string = '';
+  fullNameEdit: string = '';
+  emailEdit: string = '';
   profilePhotoUrl: string | null = null;
   selectedFile: File | null = null;
+
+  isEditing = signal(false);
 
   imageUploadService = inject(UploadService);
   userService = inject(UsersignupService);
 
   ngOnInit(): void {
+    this.loadUserData();
+  }
+  loadUserData() {
     this.userService.getUserById().subscribe({
       next: (res) => {
         (this.fullName = res.fullName),
+          (this.fullNameEdit = this.fullName),
           (this.email = res.email),
+          (this.emailEdit = this.email),
           (this.profilePhotoUrl = res.image);
       },
       error: (err) => {
@@ -37,9 +46,12 @@ export class UserProfileComponent implements OnInit {
     if (file) {
       this.selectedFile = file;
       this.profilePhotoUrl = URL.createObjectURL(file);
+      this.isUploadingPhoto.set(true);
+      this.saveChanges();
     }
   }
 
+  isUploadingPhoto = signal(false);
   async saveChanges() {
     let uploadedUrl = this.profilePhotoUrl;
 
@@ -51,17 +63,30 @@ export class UserProfileComponent implements OnInit {
       uploadedUrl = response.imageUrl;
     }
 
+    if(this.fullName === this.fullNameEdit && this.email === this.emailEdit){
+      this.isEditing.set(false)
+      return
+    }
+
     let userData = {
-      fullName: this.fullName,
-      email: this.email,
+      fullName: this.fullNameEdit,
+      email: this.emailEdit,
       image: uploadedUrl!,
     };
 
-    console.log(userData);
-
     this.userService.updateUser(userData).subscribe({
-      next: (res) => console.log(res),
-      error: (err) => console.log(err),
+      next: (res) => {
+        this.isUploadingPhoto.set(false);
+        this.loadUserData()
+        if(this.isEditing())
+          this.isEditing.set(false)
+        this.selectedFile = null;
+        console.log(res);
+      },
+      error: (err) => {
+        this.isUploadingPhoto.set(true);
+        console.log(err);
+      },
     });
   }
 }
