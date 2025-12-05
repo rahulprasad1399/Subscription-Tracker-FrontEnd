@@ -33,7 +33,7 @@ export class NotificationHubService {
       console.log(message);
       console.log(message.newNotification);
       this.notifications.update((prev) => [message.newNotification, ...prev]);
-
+      this.notificationService.refreshUnreadCount();
     });
   }
 }
