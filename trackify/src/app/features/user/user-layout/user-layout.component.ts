@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { UsersignupService } from '../../../shared/services/userAuth.service';
+import { NotificationHubService } from '../../../shared/services/notification-hub.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -21,6 +22,7 @@ import { UsersignupService } from '../../../shared/services/userAuth.service';
 export class UserLayoutComponent {
   http = inject(HttpClient);
   notificationService = inject(NotificationService);
+  notificationHubService = inject(NotificationHubService)
   router = inject(Router)
 
   authService = inject(UsersignupService);

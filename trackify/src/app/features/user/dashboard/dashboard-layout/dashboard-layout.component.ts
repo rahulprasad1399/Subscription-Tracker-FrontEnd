@@ -11,6 +11,7 @@ import {
   UpcomingRenewalData,
 } from '../models/dashbord-models';
 import { DashboardService } from '../../../../shared/services/dashboard.service';
+import { NotificationHubService } from '../../../../shared/services/notification-hub.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -31,6 +32,7 @@ export class DashboardLayoutComponent {
   upcomingRenewalData = signal<UpcomingRenewalData | null>(null);
 
   private darshboardService = inject(DashboardService);
+  notificationHubService = inject(NotificationHubService);
 
   ngOnInit() {
     this.loadDashboardData();
@@ -53,9 +55,9 @@ export class DashboardLayoutComponent {
         if (data.upcomingRenewalData) {
           this.upcomingRenewalData.set(data.upcomingRenewalData);
         }
-console.log(this.summaryCardData());
-console.log(this.insightsData());
-console.log(this.upcomingRenewalData());
+        console.log(this.summaryCardData());
+        console.log(this.insightsData());
+        console.log(this.upcomingRenewalData());
       },
       error: (err) => {
         console.log('Erro fetching data ', err);

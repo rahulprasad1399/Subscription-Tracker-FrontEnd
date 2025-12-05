@@ -1,4 +1,4 @@
-@if(isLoading()){
+@if (isLoading()) {
 <div class="w-full max-w-5xl mx-auto px-4 py-8 relative animate-pulse">
   <div class="flex items-center justify-between mb-6">
     <div>
@@ -21,7 +21,6 @@
       <div class="flex-grow min-w-0">
         <div class="flex items-center justify-between">
           <div class="h-4 w-60 bg-muted/20 rounded-md"></div>
-
           <div class="h-3 w-20 bg-muted/10 rounded-md ml-4"></div>
         </div>
       </div>
@@ -34,35 +33,37 @@
   </div>
 </div>
 } @else {
-<div class="w-full max-w-5xl mx-auto px-4 py-8 relative">
-  <div>
-    <header>
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h2 class="text-huge font-bold text-main tracking-tight">
-            Notifications
-          </h2>
-          <p class="text-muted mt-1 text-sm">
-            Track important updates across your subscriptions
-          </p>
-        </div>
-        @if(notificationCount() > 0) {
-        <button
-          class="px-4 py-2 text-sm font-medium rounded-lg text-primary bg-primary/10 hover:bg-primary/20 transition-colors duration-200 border border-primary/20"
-          (click)="onMarkAllAsRead()"
-        >
-          Mark All as Read
-        </button>
-        }
-      </div>
-    </header>
-  </div>
 
+<div class="w-full max-w-5xl mx-auto px-4 py-8 relative">
+  <!-- HEADER -->
+  <header>
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-huge font-bold text-main tracking-tight">
+          Notifications
+        </h2>
+        <p class="text-muted mt-1 text-sm">
+          Track important updates across your subscriptions
+        </p>
+      </div>
+
+      @if (notificationCount() > 0) {
+      <button
+        class="px-4 py-2 text-sm font-medium rounded-lg text-primary bg-primary/10 hover:bg-primary/20 transition-colors duration-200 border border-primary/20"
+        (click)="onMarkAllAsRead()"
+      >
+        Mark All as Read
+      </button>
+      }
+    </div>
+  </header>
+
+  <!-- CONTENT -->
   <div class="space-y-4">
-    @for(notification of notifications(); track notification.id) {
-    @if(!notification.isRead){
+    <!-- 🚨 UNREAD NOTIFICATIONS -->
+    @for (notification of unreadNotification(); track notification.id) {
     <div
-      class="flex items-center bg-card rounded-xl p-4 shadow-md border border-muted/10 hover:shadow-lg transition-shadow duration-300 group"
+      class="flex items-center bg-card rounded-xl p-4 shadow-md border border-muted/10 hover:shadow-lg transition-shadow duration-300 group cursor-pointer"
       (click)="onSelectNotification(notification)"
     >
       <div class="relative flex-shrink-0 mr-4">
@@ -104,7 +105,64 @@
         </button>
       </div>
     </div>
-    } } @empty {
+    }
+
+    <!-- Divider -->
+    @if (unreadNotification().length > 0 && readNotification().length > 0) {
+    <div class="h-8 w-full flex justify-center items-center">
+      <div class="w-[95%] h-[0.1px] bg-muted/40"></div>
+    </div>
+    }
+
+    <!-- ✔ READ NOTIFICATIONS -->
+    @for (notification of readNotification(); track notification.id) {
+    <div
+      class="flex items-center bg-card rounded-xl p-4 shadow-md border border-muted/10 hover:shadow-lg transition-shadow duration-300 group cursor-pointer opacity-70"
+      (click)="onSelectNotification(notification)"
+    >
+      <div class="relative flex-shrink-0 mr-4">
+        <img
+          [src]="notification.serviceId | serviceImage"
+          [alt]="notification.serviceName"
+          class="w-10 h-10 rounded-full object-cover border-2 border-primary/20 bg-white p-0.5 shadow-sm group-hover:scale-105 transition-transform duration-200"
+        />
+      </div>
+
+      <div class="flex-grow min-w-0">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-semibold text-main truncate">
+            Subscription Renewal Alert: {{ notification.serviceName }}
+          </h3>
+          <span class="text-tiny text-muted font-mono ml-4 flex-shrink-0">
+            {{ notification.createdAt | date : "dd-MMM-yyyy" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="flex-shrink-0 ml-4 self-center">
+        <button
+          class="p-2 rounded-full text-muted hover:text-primary hover:bg-primary/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+          title="View Details"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- EMPTY -->
+    <!-- @if (notificationCount() === 0) {
     <div
       class="bg-card rounded-2xl p-12 text-center shadow-xl border border-muted/10"
     >
@@ -112,58 +170,11 @@
         You are all caught up! No new notifications found.
       </p>
     </div>
-    } @if(notificationCount() > 0){
-    <div class="h-8 w-full flex justify-center items-center">
-      <div class="w-[95%] h-[0.1px] bg-muted/40"></div>
-    </div>
-    } @for(notification of notifications(); track notification.id) {
-    @if(notification.isRead){
-    <div
-      class="flex items-center bg-card rounded-xl p-4 shadow-md border border-muted/10 hover:shadow-lg transition-shadow duration-300 group"
-      (click)="onSelectNotification(notification)"
-    >
-      <div class="relative flex-shrink-0 mr-4">
-        <img
-          [src]="notification.serviceId | serviceImage"
-          [alt]="notification.serviceName"
-          class="w-10 h-10 rounded-full object-cover border-2 border-primary/20 bg-white p-0.5 shadow-sm group-hover:scale-105 transition-transform duration-200"
-        />
-      </div>
-
-      <div class="flex-grow min-w-0">
-        <div class="flex items-center justify-between">
-          <h3 class="text-base font-semibold text-main truncate">
-            Subscription Renewal Alert: {{ notification.serviceName }}
-          </h3>
-          <span class="text-tiny text-muted font-mono ml-4 flex-shrink-0">
-            {{ notification.createdAt | date : "dd-MMM-yyyy" }}
-          </span>
-        </div>
-      </div>
-
-      <div class="flex-shrink-0 ml-4 self-center">
-        <button
-          class="p-2 rounded-full text-muted hover:text-primary hover:bg-primary/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
-          title="View Details"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
-    </div>
-    } }
+    } -->
   </div>
-  @if(openModal()){
+
+  <!-- MODAL -->
+  @if (openModal()) {
   <div
     class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50"
     (click)="onCloseModal()"
@@ -246,7 +257,7 @@
       </div>
     </div>
   </div>
-
   }
 </div>
+
 }

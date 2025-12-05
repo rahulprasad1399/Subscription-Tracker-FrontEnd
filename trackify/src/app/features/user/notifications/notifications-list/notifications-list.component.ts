@@ -1,4 +1,12 @@
-import { Component, OnInit, inject, input, signal } from '@angular/core';
+import {
+  Compiler,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ServiceImagePipe } from '../../../../shared/pipes/service-image.pipe';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -12,7 +20,14 @@ import { NotificationInter } from '../../../../shared/models/notification.model'
 })
 export class NotificationsListComponent implements OnInit {
   notificationService = inject(NotificationService);
-  notifications = signal<Array<NotificationInter>>([]);
+  notifications = this.notificationService.notifications;
+
+  unreadNotification = computed(() =>
+    this.notifications().filter((n) => !n.isRead)
+  );
+  readNotification = computed(() =>
+    this.notifications().filter((n) => n.isRead)
+  );
 
   notificationCount = signal<number>(0);
 

@@ -15,6 +15,8 @@ export class NotificationService {
   private apiUrl = `${environment.apiUrl}/Notification`;
 
   notificationCount = signal<number>(0);
+  notifications = signal<Array<NotificationInter>>([]);
+
 
   getAllNotifications(): Observable<NotificationInter[]> {
     return this.http.get<NotificationInter[]>(this.apiUrl, {
