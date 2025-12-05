@@ -1,1 +1,43 @@
+<div id="mainCursor" class="cursor-main">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <path id="arrowShape" d="M7 2L7 27L12.5 21.5L22 22L7 2Z" />
+      
+      <path id="handShape" d="M10 2C10 0.9 10.9 0 12 0C13.1 0 14 0.9 14 2V11H15.5C16.9 11 18 12.1 18 13.5V19C18 21.8 15.8 24 13 24H9.5C7.5 24 5.7 23.2 4.3 21.8L3 20.5L5.5 18L10 22.5V2Z" transform="translate(2, 4) scale(1.1)"/>
+
+      <clipPath id="clipArrow">
+        <use href="#arrowShape" />
+      </clipPath>
+      <clipPath id="clipHand">
+        <use href="#handShape" />
+      </clipPath>
+
+      <g id="stripesGroup">
+        <rect x="-5" y="14" width="40" height="9" transform="rotate(-45 16 16)" fill="#73C7F3" />
+        <rect x="-5" y="12" width="40" height="2" transform="rotate(-45 16 16)" fill="white" />
+        <rect x="-5" y="23" width="40" height="2" transform="rotate(-45 16 16)" fill="white" />
+      </g>
+    </defs>
+
+    <g class="state-arrow">
+      <use href="#arrowShape" fill="#2dd4bf" />
+      <g clip-path="url(#clipArrow)">
+        <use href="#stripesGroup" />
+      </g>
+      <use href="#arrowShape" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round" />
+    </g>
+
+    <g class="state-hand">
+      <use href="#handShape" fill="#2dd4bf" />
+      <g clip-path="url(#clipHand)">
+        <use href="#stripesGroup" />
+      </g>
+      <use href="#handShape" stroke="#1A1A1A" stroke-width="3" stroke-linejoin="round" />
+    </g>
+
+  </svg>
+</div>
+
+<div id="followerCursor" class="cursor-follower"></div>
+
 <router-outlet></router-outlet>

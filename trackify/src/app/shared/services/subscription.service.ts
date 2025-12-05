@@ -13,7 +13,7 @@ export class SubscriptionService {
   private apiUrl = `${environment.apiUrl}/subscription`;
 
   getSubscriptions(searchQuery? : string): Observable<GetAllSubscriptionsResponse> {
-    return this.http.get<GetAllSubscriptionsResponse>(`${this.apiUrl}?searchQuery=${searchQuery || ''}`, {withCredentials : true});
+    return this.http.get<GetAllSubscriptionsResponse>(`${this.apiUrl}?searchQuery=${searchQuery || ''}`, );
   }
   getSubscriptionById(id: number): Observable<Subscription> {
     return this.http.get<Subscription>(`${this.apiUrl}/${id}`,{

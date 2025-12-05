@@ -1,0 +1,89 @@
+/* Hide default system cursor */
+body {
+  cursor: none;
+}
+
+/* 1. MAIN CURSOR (Container) */
+.cursor-main {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;  /* Size of the pointer */
+  height: 24px;
+  pointer-events: none;
+  z-index: 10001; /* Must be higher than the follower */
+  
+  /* Remove old background-image code if it's there */
+  background: none; 
+  border: none;
+  border-radius: 0;
+  svg g {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform-origin: center center;
+  }
+
+  /* DEFAULT STATE */
+  .state-arrow {
+    opacity: 1;
+    transform: scale(1);
+  }
+  
+  .state-hand {
+    opacity: 0;
+    transform: scale(0.5); /* Starts small for pop-in effect */
+  }
+  
+  /* Add a drop shadow for better visibility on white backgrounds */
+  filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
+}
+
+/* 2. SVG STYLING (The shape itself) */
+.cursor-main svg path {
+  fill: #2dd4bf;       /* The inside color */
+  stroke: black;     /* The border color */
+  stroke-width: 0.5px;
+  stroke-linejoin: round;
+  
+}
+
+/* 3. FOLLOWER CURSOR (The Ring - Unchanged) */
+.cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 242, 255, 0.2);
+  border: 1px solid #00f2ff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+/* OPTIONAL: Change SVG color when clicking */
+.cursor-active svg path {
+  fill: #00f2ff; /* Turns blue when you click */
+}
+
+:host-context(body.cursor-hover) .cursor-main,
+::ng-deep body.cursor-hover .cursor-main {
+
+  .state-arrow {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  .state-hand {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ensure the follower ring also expands (from your previous code) */
+::ng-deep body.cursor-hover .cursor-follower {
+  transform: translate(-50%, -50%) scale(1.8);
+  background: rgba(45, 212, 191, 0.1); /* Match teal color optionally */
+  border-color: #2dd4bf;
+}

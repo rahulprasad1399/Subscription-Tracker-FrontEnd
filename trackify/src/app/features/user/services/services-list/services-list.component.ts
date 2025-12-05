@@ -127,6 +127,33 @@ export class ServicesListComponent {
     }
   }
 
+
+  // Dropdown Signals
+searchCategoryQuery = signal<string>('');
+isCategoryDropdownOpen = signal<boolean>(false);
+
+// Filtered Category List
+filteredCategory = () => {
+  const query = this.searchCategoryQuery().toLowerCase();
+  return this.category().filter(cat =>
+    cat.categoryName.toLowerCase().includes(query)
+  );
+};
+
+// Select Category
+selectCategory(cat: Category) {
+  this.serviceForm.controls.categoryId.setValue(cat.id);
+  this.searchCategoryQuery.set(cat.categoryName);
+  this.isCategoryDropdownOpen.set(false);
+}
+
+// Close dropdown on blur
+toggleCategoryDropdown(value: boolean) {
+  setTimeout(() => this.isCategoryDropdownOpen.set(value), 200);
+}
+
+
+
   onEdit(service: Service) {
     this.isEdit.set(true);
     this.isModalOpen.set(true);

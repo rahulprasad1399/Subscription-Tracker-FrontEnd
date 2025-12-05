@@ -63,7 +63,7 @@ export class UserProfileComponent implements OnInit {
       uploadedUrl = response.imageUrl;
     }
 
-    if(this.fullName === this.fullNameEdit && this.email === this.emailEdit){
+    if(this.fullName === this.fullNameEdit && this.email === this.emailEdit && !this.selectedFile){
       this.isEditing.set(false)
       return
     }

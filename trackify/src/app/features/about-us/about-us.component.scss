@@ -1,0 +1,95 @@
+/* Continuous Floating Animation for background blobs */
+@keyframes float {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: float 10s infinite ease-in-out;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Subtle Grid Background */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(20, 184, 166, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+ @keyframes morph {
+      0% {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        transform: rotate(0deg) scale(1);
+      }
+      25% {
+        border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+        transform: rotate(90deg) scale(1.1);
+      }
+      50% {
+        border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+        transform: rotate(180deg) scale(0.9);
+      }
+      75% {
+        border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+        transform: rotate(270deg) scale(1.05);
+      }
+      100% {
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        transform: rotate(360deg) scale(1);
+      }
+    }
+
+
+    .glitch-bg {
+  position: relative;
+  height: 100vh;
+  background: none;
+  animation: glitchRGB 1s infinite alternate-reverse;
+}
+
+.glitch-bg::before,
+.glitch-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle 100px at 50% 50%,
+    #2dd4bf 0%,
+    #818cf8 35%,
+    #ffffff 60%
+  );
+  mix-blend-mode: screen;
+  filter: brightness(1.2);
+}
+
+.glitch-bg::before {
+  animation: glitchShiftR 0.9s infinite steps(3);
+  filter: hue-rotate(20deg) drop-shadow(0 0 4px cyan);
+}
+
+.glitch-bg::after {
+  animation: glitchShiftB 0.9s infinite steps(3);
+  filter: hue-rotate(-20deg) drop-shadow(0 0 4px magenta);
+}
+
+@keyframes glitchShiftR {
+  0% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 1px); }
+  100% { transform: translate(1px, -1px); }
+}
+
+@keyframes glitchShiftB {
+  0% { transform: translate(-2px, 1px); }
+  50% { transform: translate(1px, -2px); }
+  100% { transform: translate(-1px, 2px); }
+}
+    

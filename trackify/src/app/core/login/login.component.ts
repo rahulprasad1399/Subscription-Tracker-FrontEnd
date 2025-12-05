@@ -37,6 +37,7 @@ export class LoginComponent {
   get logControls() {
     return this.loginForm.controls;
   }
+
   registerForm = new FormGroup<RegisterForm>({
     fullName: new FormControl<string>('', {
       nonNullable: true,
